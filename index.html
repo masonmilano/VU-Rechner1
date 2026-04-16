@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Vanilla Unicorn Kasse</title>
+
+<style>
+body {
+    margin: 0;
+    background: radial-gradient(circle at top, #1a0015, #000);
+    color: #ff4dd2;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+    font-size: 32px;
+    text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc;
+}
+
+h2 {
+    color: #fff;
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    gap: 25px;
+}
+
+.category {
+    width: 90%;
+    max-width: 900px;
+}
+
+.category-title {
+    font-size: 22px;
+    margin: 10px 0;
+    color: #ff4dd2;
+    text-shadow: 0 0 10px #ff00cc;
+    text-align: left;
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.item {
+    width: 200px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255, 0, 204, 0.08);
+    border: 1px solid rgba(255, 0, 204, 0.4);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 0 10px rgba(255, 0, 204, 0.2);
+}
+
+.item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.6);
+}
+
+button {
+    background: linear-gradient(90deg, #ff00cc, #ff4dd2);
+    border: none;
+    padding: 12px 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+.total {
+    margin-top: 20px;
+    font-size: 26px;
+}
+
+textarea {
+    width: 90%;
+    height: 130px;
+    margin-top: 20px;
+    background: #000;
+    color: #0f0;
+    border: 1px solid #ff00cc;
+    padding: 10px;
+}
+
+.footer {
+    margin-top: 20px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Vanilla Unicorn Kasse</h1>
+<h2 id="date"></h2>
+
+<div class="container" id="container"></div>
+
+<div class="total">
+💰 Gesamt: <span id="total">0</span>$
+</div>
+
+<button onclick="generateLog()">🧾 Log erstellen</button>
+<button onclick="resetAll()">🔄 Reset</button>
+
+<textarea id="logOutput" placeholder="Discord Log erscheint hier..."></textarea>
+
+<div class="footer">by Mason Milano</div>
+
+<script>
+const products = [
+    // GETRÄNKE
+    {name: "Champagner", price: 5000, count: 0, cat: "Getränke"},
+    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
+    {name: "Daddys Big Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Mommy's Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
+
+    // ESSEN
+    {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
+    {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
+    {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
+    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
+    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
+
+    // EXTRA
+    {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
+];
+
+const container = document.getElementById("container");
+const totalDisplay = document.getElementById("total");
+
+let displayedTotal = 0;
+
+function updateDate() {
+    const now = new Date();
+    document.getElementById("date").innerText =
+        "📅 " + now.toLocaleDateString() + " - " + now.toLocaleTimeString();
+}
+setInterval(updateDate, 1000);
+
+function animateTotal(newTotal) {
+    const diff = newTotal - displayedTotal;
+    const step = diff / 20;
+
+    let i = 0;
+    const interval = setInterval(() => {
+        displayedTotal += step;
+        totalDisplay.innerText = Math.floor(displayedTotal);
+
+        i++;
+        if (i >= 20) {
+            displayedTotal = newTotal;
+            totalDisplay.innerText = newTotal;
+            clearInterval(interval);
+        }
+    }, 20);
+}
+
+function render() {
+    container.innerHTML = "";
+    let total = 0;
+
+    const categories = ["Getränke", "Essen", "Extra"];
+
+    categories.forEach(cat => {
+        const section = document.createElement("div");
+        section.className = "category";
+
+        const title = document.createElement("div");
+        title.className = "category-title";
+        title.innerText = cat;
+
+        const itemsDiv = document.createElement("div");
+        itemsDiv.className = "items";
+
+        products.filter(p => p.cat === cat).forEach((p) => {
+            total += p.price * p.count;
+
+            const div = document.createElement("div");
+            div.className = "item";
+            div.innerHTML = `
+                <b>${p.name}</b><br>
+                Preis: ${p.price}$<br>
+                Anzahl: ${p.count}
+            `;
+
+            div.onclick = () => {
+                p.count++;
+                render();
+            };
+
+            itemsDiv.appendChild(div);
+        });
+
+        section.appendChild(title);
+        section.appendChild(itemsDiv);
+        container.appendChild(section);
+    });
+
+    animateTotal(total);
+}
+
+function generateLog() {
+    let log = "📦 **Ausgaben:**\n";
+    let totalMoney = 0;
+    let totalItems = 0;
+
+    products.forEach(p => {
+        if (p.count > 0) {
+            const sum = p.price * p.count;
+            totalMoney += sum;
+            totalItems += p.count;
+
+            log += `- ${p.name} x${p.count} = ${sum}$\n`;
+        }
+    });
+
+    log += `\n📊 **Gesamt Artikel:** ${totalItems}`;
+    log += `\n💰 **Gesamt Umsatz:** ${totalMoney}$`;
+
+    document.getElementById("logOutput").value = log;
+}
+
+function resetAll() {
+    products.forEach(p => p.count = 0);
+    render();
+    document.getElementById("logOutput").value = "";
+}
+
+render();
+</script>
+
+</body>
+</html>
