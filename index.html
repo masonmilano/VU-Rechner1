@@ -2,111 +2,131 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Vanilla Unicorn Kasse</title>
+<title>Vanilla Unicorn Rechner</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at top, #1a0015, #000);
+    background: radial-gradient(circle at top, #2a0022, #000);
     color: #ff4dd2;
-    font-family: Arial, sans-serif;
+    font-family: "Poppins", sans-serif;
     text-align: center;
 }
 
 h1 {
     margin-top: 20px;
-    font-size: 32px;
-    text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc;
+    font-size: 34px;
+    font-family: "Orbitron", sans-serif;
+    letter-spacing: 2px;
+    color: #ff4dd2;
+    text-shadow: 0 0 10px #ff00cc, 0 0 25px #ff00cc;
 }
 
 h2 {
     color: #fff;
-    font-size: 16px;
-    opacity: 0.8;
+    font-size: 14px;
+    opacity: 0.7;
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 30px;
-    gap: 25px;
+    margin-top: 25px;
+    gap: 30px;
 }
 
 .category {
-    width: 90%;
-    max-width: 900px;
+    width: 92%;
+    max-width: 950px;
+    background: rgba(255, 0, 204, 0.05);
+    border: 1px solid rgba(255, 0, 204, 0.2);
+    border-radius: 16px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
 }
 
 .category-title {
-    font-size: 22px;
-    margin: 10px 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-align: left;
+    font-family: "Orbitron", sans-serif;
     color: #ff4dd2;
     text-shadow: 0 0 10px #ff00cc;
-    text-align: left;
 }
 
 .items {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
 }
 
 .item {
-    width: 200px;
-    padding: 15px;
+    padding: 12px;
     border-radius: 12px;
     background: rgba(255, 0, 204, 0.08);
-    border: 1px solid rgba(255, 0, 204, 0.4);
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 0, 204, 0.3);
     cursor: pointer;
     transition: 0.2s;
-    box-shadow: 0 0 10px rgba(255, 0, 204, 0.2);
+    box-shadow: 0 0 10px rgba(255, 0, 204, 0.15);
+    font-size: 14px;
 }
 
 .item:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 0, 204, 0.6);
+    box-shadow: 0 0 18px rgba(255, 0, 204, 0.6);
+    border: 1px solid rgba(255, 0, 204, 0.7);
 }
 
 button {
     background: linear-gradient(90deg, #ff00cc, #ff4dd2);
     border: none;
-    padding: 12px 20px;
-    margin-top: 15px;
+    padding: 10px 18px;
+    margin-top: 12px;
     cursor: pointer;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     border-radius: 10px;
-    margin-right: 5px;
+    transition: 0.2s;
+    margin-right: 6px;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff00cc;
 }
 
 .total {
     margin-top: 20px;
-    font-size: 26px;
+    font-size: 24px;
+    font-family: "Orbitron", sans-serif;
 }
 
 textarea {
     width: 90%;
-    height: 130px;
-    margin-top: 20px;
-    background: #000;
-    color: #0f0;
+    height: 140px;
+    margin-top: 18px;
+    background: #0a0008;
+    color: #00ff99;
     border: 1px solid #ff00cc;
     padding: 10px;
+    border-radius: 10px;
+    font-family: monospace;
 }
 
 .footer {
     margin-top: 20px;
-    color: #777;
+    color: #666;
+    font-size: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Vanilla Unicorn Kasse</h1>
+<h1>Vanilla Unicorn Rechner</h1>
 <h2 id="date"></h2>
 
 <div class="container" id="container"></div>
@@ -226,7 +246,6 @@ function undoAction() {
     if (!product) return;
 
     product.count -= last.change;
-
     if (product.count < 0) product.count = 0;
 
     render();
