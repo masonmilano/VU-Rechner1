@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Vanilla Unicorn Rechner</title>
+<title>Vanilla Unicorn Kasse</title>
 
 <style>
 body {
@@ -79,6 +79,7 @@ button {
     color: white;
     font-weight: bold;
     border-radius: 10px;
+    margin-right: 5px;
 }
 
 .total {
@@ -116,6 +117,7 @@ textarea {
 
 <button onclick="generateLog()">🧾 Log erstellen</button>
 <button onclick="resetAll()">🔄 Reset</button>
+<button onclick="undoAction()">↩️ Undo</button>
 
 <textarea id="logOutput" placeholder="Discord Log erscheint hier..."></textarea>
 
@@ -123,23 +125,22 @@ textarea {
 
 <script>
 const products = [
-    // GETRÄNKE
-    {name: "Champagner", price: 5000, count: 0, cat: "Getränke"},
-    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
-    {name: "Daddys Big Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Mommy's Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Candy Drink", price: 2000, count: 0, cat: "Getränke"},
+    {name: "Special Shot", price: 4000, count: 0, cat: "Getränke"},
+    {name: "Big Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Sweet Juice", price: 4500, count: 0, cat: "Getränke"},
     {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
 
-    // ESSEN
     {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
     {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
     {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
-    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
-    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
+    {name: "Nuts Snack", price: 1500, count: 0, cat: "Essen"},
+    {name: "Champagner", price: 5000, count: 0, cat: "Essen"},
 
-    // EXTRA
     {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
 ];
+
+let actionHistory = [];
 
 const container = document.getElementById("container");
 const totalDisplay = document.getElementById("total");
@@ -196,11 +197,12 @@ function render() {
             div.innerHTML = `
                 <b>${p.name}</b><br>
                 Preis: ${p.price}$<br>
-                Anzahl: ${p.count}
+                🧾 Im Warenkorb: ${p.count}
             `;
 
             div.onclick = () => {
                 p.count++;
+                actionHistory.push({ name: p.name, change: +1 });
                 render();
             };
 
@@ -213,6 +215,21 @@ function render() {
     });
 
     animateTotal(total);
+}
+
+function undoAction() {
+    if (actionHistory.length === 0) return;
+
+    const last = actionHistory.pop();
+
+    const product = products.find(p => p.name === last.name);
+    if (!product) return;
+
+    product.count -= last.change;
+
+    if (product.count < 0) product.count = 0;
+
+    render();
 }
 
 function generateLog() {
@@ -238,6 +255,7 @@ function generateLog() {
 
 function resetAll() {
     products.forEach(p => p.count = 0);
+    actionHistory = [];
     render();
     document.getElementById("logOutput").value = "";
 }
