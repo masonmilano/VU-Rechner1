@@ -274,12 +274,25 @@ function render() {
             `;
 
             /* CLICK */
-            div.onclick = () => {
-                p.count++;
-                actionHistory.push({ name: p.name, change: +1 });
-                play(clickSound);
-                render();
-            };
+           div.onclick = () => {
+    // LINKSKLICK = +1
+    p.count++;
+    actionHistory.push({ name: p.name, change: +1 });
+    play(clickSound);
+    render();
+};
+
+div.oncontextmenu = (e) => {
+    // RECHTSKLICK = -1
+    e.preventDefault();
+
+    if (p.count > 0) {
+        p.count--;
+        actionHistory.push({ name: p.name, change: -1 });
+        play(clickSound);
+        render();
+    }
+};
 
             /* HOVER (IMMER) */
             div.onmouseenter = () => {
