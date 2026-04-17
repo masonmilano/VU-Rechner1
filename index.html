@@ -132,6 +132,29 @@ textarea {
     font-family: monospace;
 }
 
+/* ===== SCROLLBAR STYLING (LOG) ===== */
+
+/* Chrome / Edge / Safari */
+textarea::-webkit-scrollbar {
+    width: 10px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: rgba(255, 0, 204, 0.08);
+    border-radius: 10px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff00cc, #ff4dd2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ff00cc;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: #ff00cc;
+    box-shadow: 0 0 15px #ff00cc;
+}
+    
 .footer {
     margin-top: 20px;
     color: #666;
