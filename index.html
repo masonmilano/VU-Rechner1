@@ -337,6 +337,27 @@ textarea::-webkit-scrollbar-thumb:hover {
 
     letter-spacing: 4px;
 }
+    .top-nav {
+    width: 92%;
+    max-width: 950px;
+    margin: 15px auto 10px auto;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    background: rgba(255, 0, 204, 0.06);
+    border: 1px solid rgba(255, 0, 204, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 0 18px rgba(255, 0, 204, 0.12);
+}
+
+.top-nav button {
+    margin-top: 0;
+}
 </style>
 </head>
 
@@ -344,7 +365,12 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 <h1>Vanilla Unicorn Rechner</h1>
 <h2 id="date"></h2>
-
+<div id="topNav" style="display:none;" class="top-nav">
+    <button onclick="selectRole('bar')">🍹 Barkeeper</button>
+    <button onclick="selectRole('dance')">💃 Tänzerinnen</button>
+    <button onclick="selectRole('sec')">🛡️ Security</button>
+    <button onclick="goHome()">🏠 Start</button>
+</div>
 <!-- START SCREEN -->
 <div id="roleSelect" class="container">
     <div class="item" onclick="selectRole('bar')">🍹 Barkeeper</div>
@@ -790,29 +816,43 @@ function fallbackCopy(textArea){
     }
 }
 function selectRole(role) {
-    // alles verstecken
-document.getElementById("roleSelect").style.display = "none";
-document.getElementById("barPanel").style.display = "none";
-document.getElementById("dancePanel").style.display = "none";
-document.getElementById("secPanel").style.display = "none";
-document.getElementById("barControls").style.display = "none";
-    // richtiges Panel anzeigen
-  if (role === "bar") {
-    document.getElementById("barPanel").style.display = "block";
-    document.getElementById("barControls").style.display = "block";
-    render();
-}
+    // Startscreen ausblenden
+    document.getElementById("roleSelect").style.display = "none";
 
-   if (role === "dance") {
-    document.getElementById("dancePanel").style.display = "block";
-    updateDanceUI();
-}
+    // obere Navigation anzeigen
+    document.getElementById("topNav").style.display = "flex";
+
+    // alles andere verstecken
+    document.getElementById("barPanel").style.display = "none";
+    document.getElementById("dancePanel").style.display = "none";
+    document.getElementById("secPanel").style.display = "none";
+    document.getElementById("barControls").style.display = "none";
+
+    // richtiges Panel anzeigen
+    if (role === "bar") {
+        document.getElementById("barPanel").style.display = "block";
+        document.getElementById("barControls").style.display = "block";
+        render();
+    }
+
+    if (role === "dance") {
+        document.getElementById("dancePanel").style.display = "block";
+        updateDanceUI();
+    }
 
     if (role === "sec") {
         document.getElementById("secPanel").style.display = "block";
     }
 }
+function goHome() {
+    document.getElementById("topNav").style.display = "none";
+    document.getElementById("roleSelect").style.display = "flex";
 
+    document.getElementById("barPanel").style.display = "none";
+    document.getElementById("dancePanel").style.display = "none";
+    document.getElementById("secPanel").style.display = "none";
+    document.getElementById("barControls").style.display = "none";
+}
 
 function toggleGuide(){
     const modal = document.getElementById("guideModal");
