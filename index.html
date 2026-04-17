@@ -295,23 +295,40 @@ function undoAction() {
     render();
 }
 
-function generateLog() {
-    let log = "📦 **Ausgaben:**\n";
+function generateLog(){
+    let log = "🧾 VANILLA UNICORN - SHIFT REPORT\n";
+    log += "────────────────────────\n\n";
+
     let totalMoney = 0;
     let totalItems = 0;
 
-    products.forEach(p => {
-        if (p.count > 0) {
-            const sum = p.price * p.count;
-            totalMoney += sum;
-            totalItems += p.count;
+    const categories = ["Getränke", "Essen", "Extra"];
 
-            log += `- ${p.name} x${p.count} = ${sum}$\n`;
+    categories.forEach(cat => {
+        let block = "";
+
+        products.forEach(p => {
+            if (p.cat === cat && p.count > 0) {
+                const sum = p.price * p.count;
+                totalMoney += sum;
+                totalItems += p.count;
+
+                block += `• ${p.name} ×${p.count} → ${sum}$\n`;
+            }
+        });
+
+        if (block !== "") {
+            if (cat === "Getränke") log += "🍹 GETRÄNKE\n";
+            if (cat === "Essen") log += "🍔 ESSEN\n";
+            if (cat === "Extra") log += "🎁 EXTRA\n";
+
+            log += block + "\n";
         }
     });
 
-    log += `\n📊 Gesamt Artikel: ${totalItems}`;
-    log += `\n💰 Gesamt Umsatz: ${totalMoney}$`;
+    log += "────────────────────────\n";
+    log += `📦 Artikel gesamt: ${totalItems}\n`;
+    log += `💰 Gesamt Umsatz: ${totalMoney}$`;
 
     document.getElementById("logOutput").value = log;
 }
