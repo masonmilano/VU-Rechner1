@@ -161,17 +161,17 @@ textarea {
 
 <script>
 const products = [
-    {name: "Champagner", price: 5000, count: 0, cat: "Getränke"},
-    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
-    {name: "Daddy's Big Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Mommy's Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Candy Drink", price: 2000, count: 0, cat: "Getränke"},
+    {name: "Special Shot", price: 4000, count: 0, cat: "Getränke"},
+    {name: "Big Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Sweet Juice", price: 4500, count: 0, cat: "Getränke"},
     {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
 
     {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
     {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
     {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
-    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
-    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
+    {name: "Nuts Snack", price: 1500, count: 0, cat: "Essen"},
+    {name: "Champagner", price: 5000, count: 0, cat: "Essen"},
 
     {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
 ];
@@ -186,6 +186,10 @@ let displayedTotal = 0;
 /* 🔊 SOUNDS */
 const clickSound = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
 const hoverSound = new Audio("https://www.myinstants.com/media/sounds/mouse-hover.mp3");
+
+/* 🔉 LAUTSTÄRKE (LEISER HOVER) */
+clickSound.volume = 0.4;
+hoverSound.volume = 0.15;
 
 function play(sound) {
     sound.currentTime = 0;
@@ -253,8 +257,14 @@ function render() {
                 render();
             };
 
-            /* HOVER - IMMER */
+            /* HOVER (IMMER) */
             div.onmouseenter = () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play();
+            };
+
+            /* MOBILE TOUCH */
+            div.ontouchstart = () => {
                 hoverSound.currentTime = 0;
                 hoverSound.play();
             };
