@@ -250,7 +250,8 @@ textarea::-webkit-scrollbar-thumb:hover {
     max-width: 950px;
 }
 
-#dancePanel input[type="number"] {
+#dancePanel input[type="number"],
+#dancePanel input[type="text"] {
     width: 220px;
     max-width: 90%;
     padding: 10px 12px;
@@ -263,6 +264,12 @@ textarea::-webkit-scrollbar-thumb:hover {
     outline: none;
     box-shadow: 0 0 10px rgba(255, 0, 204, 0.08);
     text-align: center;
+}
+
+#dancePanel input[type="number"]:focus,
+#dancePanel input[type="text"]:focus {
+    box-shadow: 0 0 14px rgba(255, 0, 204, 0.35);
+    border-color: #ff4dd2;
 }
 
 #dancePanel input[type="number"]:focus {
@@ -324,6 +331,10 @@ textarea::-webkit-scrollbar-thumb:hover {
 <label>Anzahl Kunden:</label><br>
 <input type="number" id="customerCount" min="1" value="1" oninput="updateDanceUI()">
 
+    <br><br>
+
+<label>Name Tänzer/in:</label><br>
+<input type="text" id="dancerName" placeholder="z. B. Candy" maxlength="30">
        <!-- Timer -->
 <div class="dance-time-box">
     ⏱️ <span id="danceTime">0</span>s
@@ -710,19 +721,27 @@ function stopDance() {
 
     danceCount++;
 
-    const now = new Date().toLocaleTimeString();
+   const now = new Date().toLocaleTimeString();
+const dancerName = document.getElementById("dancerName").value.trim() || "Unbekannt";
 
-    danceHistory.push({
-        id: danceCount,
-        time: now,
-        total: result.total,
-        perDancer: result.perDancer
-    });
+danceHistory.push({
+    id: danceCount,
+    time: now,
+    name: dancerName,
+    total: result.total,
+    perDancer: result.perDancer
+});
 
     /* Gesamt adden */
     danceTotalMoney += result.total;
     totalDanceDisplay.innerText = danceTotalMoney;
 
+/* RESET TIMER */
+document.getElementById("dancerName").value = ""; // 👈 HIER EINFÜGEN
+
+danceSeconds = 0;
+updateDanceUI();
+    
     renderDanceHistory();
     saveDanceData();
 
@@ -795,12 +814,13 @@ function renderDanceHistory() {
         div.style.borderRadius = "10px";
         div.style.background = "rgba(255,0,204,0.08)";
 
-        div.innerHTML = `
-            <b>Private ${entry.id}</b><br>
-            🕒 ${entry.time}<br>
-            💰 Gesamt: ${entry.total}$<br>
-            👯 Anteil pro Tänzerin: ${entry.perDancer}$
-        `;
+       div.innerHTML = `
+    <b>Private ${entry.id}</b><br>
+    💃 Tänzer/in: ${entry.name || "Unbekannt"}<br>
+    🕒 ${entry.time}<br>
+    💰 Gesamt: ${formatMoney(entry.total)}$<br>
+    👯 Anteil pro Tänzer/in: ${formatMoney(entry.perDancer)}$
+`;
 
         listDisplay.appendChild(div);
     });
