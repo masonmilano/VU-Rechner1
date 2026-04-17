@@ -20,13 +20,32 @@ h1 {
     font-size: 38px;
     font-family: "Orbitron", sans-serif;
     letter-spacing: 3px;
-    text-shadow: 0 0 20px #ff00cc;
+    color: #ff4dd2;
+    text-shadow:
+        0 0 5px #ff00cc,
+        0 0 15px #ff00cc,
+        0 0 30px #ff00cc,
+        0 0 60px #ff00cc;
+
+    animation: flicker 3s infinite, pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { text-shadow: 0 0 10px #ff00cc, 0 0 25px #ff00cc; }
+    50% { text-shadow: 0 0 20px #ff00cc, 0 0 60px #ff00cc; }
+}
+
+@keyframes flicker {
+    0%, 92%, 100% { opacity: 1; }
+    93% { opacity: 0.4; }
+    96% { opacity: 0.2; }
+    97% { opacity: 1; }
 }
 
 h2 {
-    font-size: 14px;
-    opacity: 0.8;
     color: #fff;
+    font-size: 14px;
+    opacity: 0.7;
 }
 
 .container {
@@ -40,8 +59,8 @@ h2 {
 .category {
     width: 92%;
     max-width: 950px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(255, 0, 204, 0.3);
+    background: rgba(255, 0, 204, 0.05);
+    border: 1px solid rgba(255, 0, 204, 0.2);
     border-radius: 16px;
     padding: 15px;
     backdrop-filter: blur(10px);
@@ -90,6 +109,11 @@ button {
     margin-right: 6px;
 }
 
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff00cc;
+}
+
 .total {
     margin-top: 20px;
     font-size: 24px;
@@ -106,6 +130,12 @@ textarea {
     padding: 10px;
     border-radius: 10px;
     font-family: monospace;
+}
+
+.footer {
+    margin-top: 20px;
+    color: #666;
+    font-size: 12px;
 }
 </style>
 </head>
@@ -124,71 +154,81 @@ textarea {
 <button onclick="generateLog()">🧾 Log erstellen</button>
 <button onclick="resetAll()">🔄 Reset</button>
 <button onclick="undoAction()">↩️ Undo</button>
+<button onclick="copyLog()">📋 Kopieren</button>
 
 <textarea id="logOutput"></textarea>
 
-<script>
+<div class="footer">by Mason Milano</div>
 
-/* =======================
-   PRODUCTS
-======================= */
+<script>
 const products = [
-    {name: "Candy Drink", price: 2000, count: 0, cat: "Getränke"},
-    {name: "Special Shot", price: 4000, count: 0, cat: "Getränke"},
-    {name: "Big Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Sweet Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Champagna", price: 5000, count: 0, cat: "Getränke"},
+    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
+    {name: "Daddy´s Big Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Mommy´s Juice", price: 4500, count: 0, cat: "Getränke"},
     {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
 
     {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
     {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
     {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
-    {name: "Nuts Snack", price: 1500, count: 0, cat: "Essen"},
-    {name: "Champagner", price: 5000, count: 0, cat: "Essen"},
+    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
+    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
 
     {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
 ];
 
 let actionHistory = [];
 
-/* =======================
-   SOUNDS
-======================= */
+const container = document.getElementById("container");
+const totalDisplay = document.getElementById("total");
+
+let displayedTotal = 0;
+
+/* 🔊 SOUNDS */
 const clickSound = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
 const hoverSound = new Audio("https://www.myinstants.com/media/sounds/mouse-hover.mp3");
 
+/* 🔉 LAUTSTÄRKE (LEISER HOVER) */
 clickSound.volume = 0.4;
 hoverSound.volume = 0.15;
 
-function play(sound){
+function play(sound) {
     sound.currentTime = 0;
     sound.play();
 }
 
-/* =======================
-   CLOCK
-======================= */
-function updateDate(){
+function updateDate() {
     const now = new Date();
     document.getElementById("date").innerText =
-        "📅 " + now.toLocaleDateString() +
-        " - ⏰ " + now.toLocaleTimeString();
+        "📅 " + now.toLocaleDateString() + " - " + now.toLocaleTimeString();
 }
-setInterval(updateDate,1000);
-updateDate();
+setInterval(updateDate, 1000);
 
-/* =======================
-   RENDER
-======================= */
-const container = document.getElementById("container");
-const totalDisplay = document.getElementById("total");
+function animateTotal(newTotal) {
+    const diff = newTotal - displayedTotal;
+    const step = diff / 20;
 
-function render(){
+    let i = 0;
+    const interval = setInterval(() => {
+        displayedTotal += step;
+        totalDisplay.innerText = Math.floor(displayedTotal);
+
+        i++;
+        if (i >= 20) {
+            displayedTotal = newTotal;
+            totalDisplay.innerText = newTotal;
+            clearInterval(interval);
+        }
+    }, 20);
+}
+
+function render() {
     container.innerHTML = "";
     let total = 0;
 
-    const categories = ["Getränke","Essen","Extra"];
+    const categories = ["Getränke", "Essen", "Extra"];
 
-    categories.forEach(cat=>{
+    categories.forEach(cat => {
         const section = document.createElement("div");
         section.className = "category";
 
@@ -199,30 +239,33 @@ function render(){
         const itemsDiv = document.createElement("div");
         itemsDiv.className = "items";
 
-        products.filter(p=>p.cat===cat).forEach(p=>{
+        products.filter(p => p.cat === cat).forEach((p) => {
             total += p.price * p.count;
 
             const div = document.createElement("div");
             div.className = "item";
-
-            div.innerHTML = `<b>${p.name}</b><br>${p.price}$<br>${p.count}`;
+            div.innerHTML = `
+                <b>${p.name}</b><br>
+                Preis: ${p.price}$<br>
+                ${p.count}
+            `;
 
             /* CLICK */
-            div.onclick = ()=>{
+            div.onclick = () => {
                 p.count++;
-                actionHistory.push({name:p.name,change:1});
+                actionHistory.push({ name: p.name, change: +1 });
                 play(clickSound);
                 render();
             };
 
-            /* HOVER */
-            div.onmouseenter = ()=>{
+            /* HOVER (IMMER) */
+            div.onmouseenter = () => {
                 hoverSound.currentTime = 0;
                 hoverSound.play();
             };
 
-            /* MOBILE */
-            div.ontouchstart = ()=>{
+            /* MOBILE TOUCH */
+            div.ontouchstart = () => {
                 hoverSound.currentTime = 0;
                 hoverSound.play();
             };
@@ -235,77 +278,100 @@ function render(){
         container.appendChild(section);
     });
 
-    totalDisplay.innerText = total;
+    animateTotal(total);
 }
 
-/* =======================
-   UNDO
-======================= */
-function undoAction(){
-    if(actionHistory.length===0)return;
+function undoAction() {
+    if (actionHistory.length === 0) return;
 
     const last = actionHistory.pop();
-    const p = products.find(x=>x.name===last.name);
+    const product = products.find(p => p.name === last.name);
 
-    if(p){
-        p.count -= last.change;
-        if(p.count<0)p.count=0;
+    if (product) {
+        product.count -= last.change;
+        if (product.count < 0) product.count = 0;
     }
 
     render();
 }
 
-/* =======================
-   RESET
-======================= */
-function resetAll(){
-    products.forEach(p=>p.count=0);
-    actionHistory=[];
-    render();
-    document.getElementById("logOutput").value="";
-}
-
-/* =======================
-   DISCORD LOG
-======================= */
 function generateLog(){
     let log = "🧾 VANILLA UNICORN - SHIFT REPORT\n";
     log += "────────────────────────\n\n";
 
-    let total = 0;
+    let totalMoney = 0;
     let totalItems = 0;
 
-    const categories = ["Getränke","Essen","Extra"];
+    const categories = ["Getränke", "Essen", "Extra"];
 
-    categories.forEach(cat=>{
+    categories.forEach(cat => {
         let block = "";
 
-        products.forEach(p=>{
-            if(p.cat===cat && p.count>0){
-                let sum = p.price*p.count;
-                total += sum;
+        products.forEach(p => {
+            if (p.cat === cat && p.count > 0) {
+                const sum = p.price * p.count;
+                totalMoney += sum;
                 totalItems += p.count;
 
                 block += `• ${p.name} ×${p.count} → ${sum}$\n`;
             }
         });
 
-        if(block!==""){
-            log += `🍹 ${cat.toUpperCase()}\n`;
+        if (block !== "") {
+            if (cat === "Getränke") log += "🍹 GETRÄNKE\n";
+            if (cat === "Essen") log += "🍔 ESSEN\n";
+            if (cat === "Extra") log += "🎁 EXTRA\n";
+
             log += block + "\n";
         }
     });
 
     log += "────────────────────────\n";
     log += `📦 Artikel gesamt: ${totalItems}\n`;
-    log += `💰 Gesamt Umsatz: ${total}$`;
+    log += `💰 Gesamt Umsatz: ${totalMoney}$`;
 
     document.getElementById("logOutput").value = log;
 }
 
-/* INIT */
-render();
+function resetAll() {
+    products.forEach(p => p.count = 0);
+    actionHistory = [];
+    render();
+    document.getElementById("logOutput").value = "";
+}
 
+/* 👉 HIER EINFÜGEN */
+function copyLog(){
+    const textArea = document.getElementById("logOutput");
+    const text = textArea.value;
+
+    if(!text){
+        alert("❌ Kein Log zum Kopieren!");
+        return;
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+            .then(() => alert("✅ Log kopiert!"))
+            .catch(() => fallbackCopy(textArea));
+    } else {
+        fallbackCopy(textArea);
+    }
+}
+
+function fallbackCopy(textArea){
+    textArea.select();
+    textArea.setSelectionRange(0, 99999);
+
+    try {
+        document.execCommand("copy");
+        alert("✅ Log kopiert!");
+    } catch {
+        alert("❌ Kopieren fehlgeschlagen");
+    }
+}
+
+render();
 </script>
 
 </body>
