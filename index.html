@@ -481,6 +481,9 @@ function formatTime(seconds) {
 
     return String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
 }
+    function formatMoney(amount) {
+    return Number(amount).toLocaleString("de-DE");
+}
 function render() {
     container.innerHTML = "";
     let total = 0;
