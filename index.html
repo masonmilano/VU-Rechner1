@@ -345,9 +345,10 @@ textarea::-webkit-scrollbar-thumb:hover {
             💰 Preis: <span id="dancePrice">0</span>$
         </div>
 
-        <!-- Buttons -->
-        <button onclick="startDance()">▶️ Start</button>
-        <button onclick="stopDance()">⏹️ Stop</button>
+       <!-- Buttons -->
+<button onclick="startDance()">▶️ Start</button>
+<button onclick="stopDance()">⏹️ Stop</button>
+<button onclick="toggleDanceGuide()">📖 Anleitung</button>
 
     </div>
 
@@ -414,7 +415,44 @@ textarea::-webkit-scrollbar-thumb:hover {
 
   </div>
 </div>
+<!-- 💃 TÄNZERINNEN ANLEITUNG POPUP -->
+<div id="danceGuideModal" class="guide-modal">
+  <div class="guide-box">
 
+    <h2>💃 Tänzerinnen Anleitung</h2>
+
+    <div class="guide-content">
+      <h3>📝 Eingaben</h3>
+      <p><b>Anzahl Tänzerinnen</b><br>→ Wie viele Tänzer/innen am Private teilnehmen</p>
+
+      <p><b>Anzahl Kunden</b><br>→ Wie viele Kunden beim Private dabei sind</p>
+
+      <p><b>Name Tänzer/in</b><br>→ Der Name wird im Verlauf und in der Rangliste gespeichert</p>
+
+      <h3>⏱️ Timer & Preis</h3>
+      <p><b>▶️ Start</b><br>→ Startet den Timer für das aktuelle Private</p>
+
+      <p><b>⏹️ Stop</b><br>→ Stoppt den Timer, berechnet den Preis und speichert den Eintrag</p>
+
+      <p><b>⏱️ Zeit</b><br>→ Zeigt die aktuelle Laufzeit des Privates</p>
+
+      <p><b>💰 Preis</b><br>→ Zeigt den aktuell berechneten Gesamtpreis</p>
+
+      <h3>📋 Verlauf</h3>
+      <p>Hier werden alle gespeicherten Privates mit Name, Uhrzeit, Gesamt und Anteil angezeigt.</p>
+
+      <p><b>❌ Löschen</b><br>→ Löscht ein einzelnes Private aus dem Verlauf</p>
+
+      <p><b>🗑️ Verlauf löschen</b><br>→ Löscht den kompletten Verlauf</p>
+
+      <h3>📊 Rangliste</h3>
+      <p>Zeigt pro Tänzer/in den gesamten Umsatz und Verdienst an.</p>
+    </div>
+
+    <button onclick="toggleDanceGuide()">Schließen</button>
+
+  </div>
+</div>
 <div class="footer">by Mason Milano</div>
 
 <script>
@@ -690,12 +728,21 @@ function toggleGuide(){
     const modal = document.getElementById("guideModal");
     modal.classList.toggle("active");
 }
-
+function toggleDanceGuide() {
+    const modal = document.getElementById("danceGuideModal");
+    modal.classList.toggle("active");
+}
 // Klick außerhalb schließt Fenster
 window.addEventListener("click", (e) => {
-    const modal = document.getElementById("guideModal");
-    if (e.target === modal) {
-        modal.classList.remove("active");
+    const guideModal = document.getElementById("guideModal");
+    const danceGuideModal = document.getElementById("danceGuideModal");
+
+    if (e.target === guideModal) {
+        guideModal.classList.remove("active");
+    }
+
+    if (e.target === danceGuideModal) {
+        danceGuideModal.classList.remove("active");
     }
 });
     /* =========================
