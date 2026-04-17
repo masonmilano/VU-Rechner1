@@ -612,10 +612,11 @@ document.getElementById("dancePanel").style.display = "none";
 document.getElementById("secPanel").style.display = "none";
 document.getElementById("barControls").style.display = "none";
     // richtiges Panel anzeigen
-    if (role === "bar") {
-        document.getElementById("barPanel").style.display = "block";
-        render(); // dein aktueller Rechner
-    }
+  if (role === "bar") {
+    document.getElementById("barPanel").style.display = "block";
+    document.getElementById("barControls").style.display = "block";
+    render();
+}
 
    if (role === "dance") {
     document.getElementById("dancePanel").style.display = "block";
