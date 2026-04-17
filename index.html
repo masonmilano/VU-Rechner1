@@ -336,17 +336,19 @@ textarea::-webkit-scrollbar-thumb:hover {
     <h2>🛡️ Security Panel kommt...</h2>
 </div>
 
-<div class="total">
-💰 Gesamt: <span id="total">0</span>$
+<div id="barControls" style="display:none;">
+    <div class="total">
+        💰 Gesamt: <span id="total">0</span>$
+    </div>
+
+    <button onclick="generateLog()">🧾 Log erstellen</button>
+    <button onclick="resetAll()">🔄 Reset</button>
+    <button onclick="undoAction()">↩️ Undo</button>
+    <button onclick="copyLog()">📋 Kopieren</button>
+    <button onclick="toggleGuide()">📖 Anleitung</button>
+
+    <textarea id="logOutput"></textarea>
 </div>
-
-<button onclick="generateLog()">🧾 Log erstellen</button>
-<button onclick="resetAll()">🔄 Reset</button>
-<button onclick="undoAction()">↩️ Undo</button>
-<button onclick="copyLog()">📋 Kopieren</button>
-<button onclick="toggleGuide()">📖 Anleitung</button>
-
-<textarea id="logOutput"></textarea>
 
 <!-- 📖 ANLEITUNG POPUP -->
 <div id="guideModal" class="guide-modal">
