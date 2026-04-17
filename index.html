@@ -464,7 +464,12 @@ function animateTotal(newTotal) {
         }
     }, 20);
 }
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
 
+    return String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+}
 function render() {
     container.innerHTML = "";
     let total = 0;
@@ -742,7 +747,7 @@ function calculateDance() {
 
 /* UI UPDATE */
 function updateDanceUI() {
-    timeDisplay.innerText = danceSeconds;
+    timeDisplay.innerText = formatTime(danceSeconds);
 
     const result = calculateDance();
     priceDisplay.innerText = result.total;
