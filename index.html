@@ -23,6 +23,12 @@ h1 {
     text-shadow: 0 0 20px #ff00cc;
 }
 
+h2 {
+    font-size: 14px;
+    opacity: 0.8;
+    color: #fff;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -107,6 +113,7 @@ textarea {
 <body>
 
 <h1>Vanilla Unicorn Rechner</h1>
+<h2 id="date"></h2>
 
 <div class="container" id="container"></div>
 
@@ -121,30 +128,60 @@ textarea {
 <textarea id="logOutput"></textarea>
 
 <script>
+
+/* =======================
+   PRODUCTS
+======================= */
 const products = [
-    {name: "Champagna", price: 5000, count: 0, cat: "Getränke"},
-    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
-    {name: "Daddy's Big Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Mommy's Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Candy Drink", price: 2000, count: 0, cat: "Getränke"},
+    {name: "Special Shot", price: 4000, count: 0, cat: "Getränke"},
+    {name: "Big Juice", price: 4500, count: 0, cat: "Getränke"},
+    {name: "Sweet Juice", price: 4500, count: 0, cat: "Getränke"},
     {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
 
     {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
     {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
     {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
-    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
-    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
+    {name: "Nuts Snack", price: 1500, count: 0, cat: "Essen"},
+    {name: "Champagner", price: 5000, count: 0, cat: "Essen"},
 
     {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
 ];
 
 let actionHistory = [];
 
+/* =======================
+   SOUNDS
+======================= */
+const clickSound = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
+const hoverSound = new Audio("https://www.myinstants.com/media/sounds/mouse-hover.mp3");
+
+clickSound.volume = 0.4;
+hoverSound.volume = 0.15;
+
+function play(sound){
+    sound.currentTime = 0;
+    sound.play();
+}
+
+/* =======================
+   CLOCK
+======================= */
+function updateDate(){
+    const now = new Date();
+    document.getElementById("date").innerText =
+        "📅 " + now.toLocaleDateString() +
+        " - ⏰ " + now.toLocaleTimeString();
+}
+setInterval(updateDate,1000);
+updateDate();
+
+/* =======================
+   RENDER
+======================= */
 const container = document.getElementById("container");
 const totalDisplay = document.getElementById("total");
 
-let displayedTotal = 0;
-
-/* Render */
 function render(){
     container.innerHTML = "";
     let total = 0;
@@ -163,16 +200,31 @@ function render(){
         itemsDiv.className = "items";
 
         products.filter(p=>p.cat===cat).forEach(p=>{
-            total += p.price*p.count;
+            total += p.price * p.count;
 
             const div = document.createElement("div");
             div.className = "item";
+
             div.innerHTML = `<b>${p.name}</b><br>${p.price}$<br>${p.count}`;
 
+            /* CLICK */
             div.onclick = ()=>{
                 p.count++;
                 actionHistory.push({name:p.name,change:1});
+                play(clickSound);
                 render();
+            };
+
+            /* HOVER */
+            div.onmouseenter = ()=>{
+                hoverSound.currentTime = 0;
+                hoverSound.play();
+            };
+
+            /* MOBILE */
+            div.ontouchstart = ()=>{
+                hoverSound.currentTime = 0;
+                hoverSound.play();
             };
 
             itemsDiv.appendChild(div);
@@ -183,10 +235,12 @@ function render(){
         container.appendChild(section);
     });
 
-    document.getElementById("total").innerText = total;
+    totalDisplay.innerText = total;
 }
 
-/* Undo */
+/* =======================
+   UNDO
+======================= */
 function undoAction(){
     if(actionHistory.length===0)return;
 
@@ -201,7 +255,9 @@ function undoAction(){
     render();
 }
 
-/* Reset */
+/* =======================
+   RESET
+======================= */
 function resetAll(){
     products.forEach(p=>p.count=0);
     actionHistory=[];
@@ -209,7 +265,9 @@ function resetAll(){
     document.getElementById("logOutput").value="";
 }
 
-/* 🔥 CLEAN DISCORD LOG */
+/* =======================
+   DISCORD LOG
+======================= */
 function generateLog(){
     let log = "🧾 VANILLA UNICORN - SHIFT REPORT\n";
     log += "────────────────────────\n\n";
@@ -245,7 +303,9 @@ function generateLog(){
     document.getElementById("logOutput").value = log;
 }
 
+/* INIT */
 render();
+
 </script>
 
 </body>
