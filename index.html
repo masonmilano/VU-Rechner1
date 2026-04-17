@@ -606,7 +606,106 @@ window.addEventListener("click", (e) => {
         modal.classList.remove("active");
     }
 });
-    
+    /* =========================
+   💃 DANCE SYSTEM
+========================= */
+
+let danceInterval = null;
+let danceSeconds = 0;
+let danceRunning = false;
+
+let danceTotalMoney = 0;
+let danceCount = 0;
+
+/* UI ELEMENTS */
+const timeDisplay = document.getElementById("danceTime");
+const priceDisplay = document.getElementById("dancePrice");
+const listDisplay = document.getElementById("danceList");
+const totalDanceDisplay = document.getElementById("danceTotal");
+
+/* START */
+function startDance() {
+    if (danceRunning) return;
+
+    danceRunning = true;
+
+    danceInterval = setInterval(() => {
+        danceSeconds++;
+        updateDanceUI();
+    }, 1000);
+}
+
+/* STOP */
+function stopDance() {
+    if (!danceRunning) return;
+
+    clearInterval(danceInterval);
+    danceRunning = false;
+
+    const result = calculateDance();
+
+    if (result.total <= 0) return;
+
+    danceCount++;
+
+    const now = new Date().toLocaleTimeString();
+
+    const entry = document.createElement("div");
+    entry.style.padding = "10px";
+    entry.style.marginBottom = "8px";
+    entry.style.border = "1px solid rgba(255,0,204,0.3)";
+    entry.style.borderRadius = "10px";
+    entry.style.background = "rgba(255,0,204,0.08)";
+
+    entry.innerHTML = `
+        <b>Private ${danceCount}</b><br>
+        🕒 ${now}<br>
+        💰 Gesamt: ${result.total}$<br>
+        👯 Pro Tänzerin: ${result.perDancer}$
+    `;
+
+    listDisplay.prepend(entry);
+
+    /* Gesamt adden */
+    danceTotalMoney += result.total;
+    totalDanceDisplay.innerText = danceTotalMoney;
+
+    /* RESET TIMER */
+    danceSeconds = 0;
+    updateDanceUI();
+}
+
+/* BERECHNUNG */
+function calculateDance() {
+    const dancers = parseInt(document.getElementById("dancerCount").value);
+    const customers = parseInt(document.getElementById("customerCount").value);
+
+    /* BASE */
+    let base = 300000 + (customers - 1) * 200000;
+
+    /* WICHTIG: weitere Tänzerinnen */
+    if (dancers > 1) {
+        base += (dancers - 1) * 700000;
+    }
+
+    /* ZEIT BLÖCKE */
+    const blocks = Math.floor(danceSeconds / 900);
+
+    /* mindestens 1 Block wenn gestartet */
+    const total = base * Math.max(1, blocks);
+
+    const perDancer = Math.floor(total / dancers);
+
+    return { total, perDancer };
+}
+
+/* UI UPDATE */
+function updateDanceUI() {
+    timeDisplay.innerText = danceSeconds;
+
+    const result = calculateDance();
+    priceDisplay.innerText = result.total;
+}
 </script>
 
 </body>
