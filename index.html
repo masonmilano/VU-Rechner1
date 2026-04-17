@@ -606,11 +606,11 @@ function fallbackCopy(textArea){
 }
 function selectRole(role) {
     // alles verstecken
-    document.getElementById("roleSelect").style.display = "none";
-    document.getElementById("barPanel").style.display = "none";
-    document.getElementById("dancePanel").style.display = "none";
-    document.getElementById("secPanel").style.display = "none";
-
+document.getElementById("roleSelect").style.display = "none";
+document.getElementById("barPanel").style.display = "none";
+document.getElementById("dancePanel").style.display = "none";
+document.getElementById("secPanel").style.display = "none";
+document.getElementById("barControls").style.display = "none";
     // richtiges Panel anzeigen
     if (role === "bar") {
         document.getElementById("barPanel").style.display = "block";
