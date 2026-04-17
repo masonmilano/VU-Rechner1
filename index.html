@@ -247,9 +247,57 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="container" id="container"></div>
 </div>
 
-<!-- Tänzerinnen PANEL (leer erstmal) -->
 <div id="dancePanel" style="display:none;">
-    <h2>💃 Tänzerinnen Panel kommt...</h2>
+
+    <div class="category">
+        <div class="category-title">💃 Private Dance</div>
+
+        <!-- Einstellungen -->
+        <div style="margin-bottom:15px;">
+            <label>Anzahl Tänzerinnen:</label><br>
+            <select id="dancerCount">
+                <option value="1">1 Tänzerin</option>
+                <option value="2">2 Tänzerinnen</option>
+                <option value="3">3 Tänzerinnen</option>
+            </select>
+
+            <br><br>
+
+            <label>Anzahl Kunden:</label><br>
+            <select id="customerCount">
+                <option value="1">1 Kunde</option>
+                <option value="2">2 Kunden</option>
+                <option value="3">3 Kunden</option>
+            </select>
+        </div>
+
+        <!-- Timer -->
+        <div style="font-size:20px; margin-bottom:10px;">
+            ⏱️ Zeit: <span id="danceTime">0</span>s
+        </div>
+
+        <!-- Preis -->
+        <div style="font-size:20px; margin-bottom:15px;">
+            💰 Preis: <span id="dancePrice">0</span>$
+        </div>
+
+        <!-- Buttons -->
+        <button onclick="startDance()">▶️ Start</button>
+        <button onclick="stopDance()">⏹️ Stop</button>
+
+    </div>
+
+    <!-- Verlauf -->
+    <div class="category">
+        <div class="category-title">📋 Verlauf</div>
+        <div id="danceList"></div>
+    </div>
+
+    <!-- Gesamt -->
+    <div class="total">
+        💰 Gesamt Tänzerinnen: <span id="danceTotal">0</span>$
+    </div>
+
 </div>
 
 <!-- Security PANEL -->
