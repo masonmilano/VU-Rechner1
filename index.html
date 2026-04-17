@@ -712,19 +712,15 @@ function stopDance() {
 
 /* BERECHNUNG */
 function calculateDance() {
-    const dancers = parseInt(document.getElementById("dancerCount").value);
-    const customers = parseInt(document.getElementById("customerCount").value);
+    const dancers = Math.max(1, parseInt(document.getElementById("dancerCount").value) || 1);
+    const customers = Math.max(1, parseInt(document.getElementById("customerCount").value) || 1);
 
-  /* BASE */
-let base = (dancers * 300000) + ((customers - 1) * 200000);
+    let base = (dancers * 300000) + ((customers - 1) * 200000);
 
-    /* ZEIT BLÖCKE */
     const blocks = Math.floor(danceSeconds / 900);
-
-    /* mindestens 1 Block wenn gestartet */
     const total = base * Math.max(1, blocks);
 
-    const perDancer = Math.floor(total / dancers);
+    const perDancer = Math.floor((total / dancers) * 0.7);
 
     return { total, perDancer };
 }
