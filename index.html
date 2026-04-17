@@ -227,6 +227,37 @@ textarea::-webkit-scrollbar-thumb:hover {
     font-size: 20px;
     padding: 20px;
 }
+
+    #dancePanel {
+    min-height: calc(100vh - 140px);
+    justify-content: center;
+    align-items: center;
+}
+
+#dancePanel .category {
+    width: 92%;
+    max-width: 950px;
+}
+
+#dancePanel input[type="number"] {
+    width: 220px;
+    max-width: 90%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 0, 204, 0.35);
+    background: rgba(10, 0, 8, 0.95);
+    color: #ff4dd2;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 0, 204, 0.08);
+    text-align: center;
+}
+
+#dancePanel input[type="number"]:focus {
+    box-shadow: 0 0 14px rgba(255, 0, 204, 0.35);
+    border-color: #ff4dd2;
+}
 </style>
 </head>
 
@@ -573,9 +604,10 @@ function selectRole(role) {
         render(); // dein aktueller Rechner
     }
 
-    if (role === "dance") {
-        document.getElementById("dancePanel").style.display = "block";
-    }
+   if (role === "dance") {
+    document.getElementById("dancePanel").style.display = "flex";
+    updateDanceUI();
+}
 
     if (role === "sec") {
         document.getElementById("secPanel").style.display = "block";
