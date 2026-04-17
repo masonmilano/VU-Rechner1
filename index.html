@@ -686,8 +686,6 @@ function clearBarData() {
 }
 
 function clearDanceHistory() {
-    
-function clearDanceHistory() {
     if (!confirm("Wirklich gesamten Verlauf löschen?")) return;
 
     danceHistory = [];
@@ -700,7 +698,7 @@ function clearDanceHistory() {
     renderDanceHistory();
     renderDancerStats();
 }
-    
+
 function undoAction() {
     if (actionHistory.length === 0) return;
 
@@ -712,6 +710,55 @@ function undoAction() {
         if (product.count < 0) product.count = 0;
     }
 
+    saveBarData();
+    render();
+}
+
+function generateLog() {
+    let log = "🧾 VANILLA UNICORN - SHIFT REPORT\n";
+    log += "────────────────────────\n\n";
+
+    let totalMoney = 0;
+    let totalItems = 0;
+
+    const categories = ["Getränke", "Essen", "Extra"];
+
+    categories.forEach(cat => {
+        let block = "";
+
+        products.forEach(p => {
+            if (p.cat === cat && p.count > 0) {
+                const sum = p.price * p.count;
+                totalMoney += sum;
+                totalItems += p.count;
+
+                block += `• ${p.name} ×${p.count} → ${sum}$\n`;
+            }
+        });
+
+        if (block !== "") {
+            if (cat === "Getränke") log += "🍹 GETRÄNKE\n";
+            if (cat === "Essen") log += "🍔 ESSEN\n";
+            if (cat === "Extra") log += "🎁 EXTRA\n";
+
+            log += block + "\n";
+        }
+    });
+
+    log += "────────────────────────\n";
+    log += `📦 Artikel gesamt: ${totalItems}\n`;
+    log += `💰 Gesamt Umsatz: ${totalMoney}$`;
+
+    document.getElementById("logOutput").value = log;
+}
+
+function resetAll() {
+    products.forEach(p => p.count = 0);
+    actionHistory = [];
+    clearBarData();
+    render();
+    document.getElementById("logOutput").value = "";
+}
 saveBarData();
 render();
 }
