@@ -649,6 +649,7 @@ document.getElementById("barControls").style.display = "none";
         document.getElementById("secPanel").style.display = "block";
     }
 }
+loadDanceData();
 render();
 
 function toggleGuide(){
@@ -673,6 +674,7 @@ let danceRunning = false;
 
 let danceTotalMoney = 0;
 let danceCount = 0;
+let danceHistory = [];
 
 /* UI ELEMENTS */
 const timeDisplay = document.getElementById("danceTime");
@@ -707,19 +709,19 @@ function stopDance() {
 
     const now = new Date().toLocaleTimeString();
 
-    const entry = document.createElement("div");
-    entry.style.padding = "10px";
-    entry.style.marginBottom = "8px";
-    entry.style.border = "1px solid rgba(255,0,204,0.3)";
-    entry.style.borderRadius = "10px";
-    entry.style.background = "rgba(255,0,204,0.08)";
+   danceHistory.push({
+    id: danceCount,
+    time: now,
+    total: result.total,
+    perDancer: result.perDancer
+});
 
-    entry.innerHTML = `
-        <b>Private ${danceCount}</b><br>
-        🕒 ${now}<br>
-        💰 Gesamt: ${result.total}$<br>
-        👯 Pro Tänzerin: ${result.perDancer}$
-    `;
+/* Gesamt adden */
+danceTotalMoney += result.total;
+totalDanceDisplay.innerText = danceTotalMoney;
+
+renderDanceHistory();
+saveDanceData();
 
     listDisplay.prepend(entry);
 
@@ -753,6 +755,59 @@ function updateDanceUI() {
 
     const result = calculateDance();
     priceDisplay.innerText = result.total;
+}
+    function saveDanceData() {
+    const data = {
+        history: danceHistory,
+        totalMoney: danceTotalMoney,
+        count: danceCount
+    };
+
+    localStorage.setItem("vuDanceData", JSON.stringify(data));
+}
+
+function loadDanceData() {
+    const saved = localStorage.getItem("vuDanceData");
+    if (!saved) {
+        renderDanceHistory();
+        return;
+    }
+
+    const data = JSON.parse(saved);
+
+    danceHistory = data.history || [];
+    danceTotalMoney = data.totalMoney || 0;
+    danceCount = data.count || 0;
+
+    totalDanceDisplay.innerText = danceTotalMoney;
+    renderDanceHistory();
+}
+
+function renderDanceHistory() {
+    listDisplay.innerHTML = "";
+
+    if (danceHistory.length === 0) {
+        listDisplay.innerHTML = "<div style='opacity:0.6;'>Noch keine Einträge vorhanden.</div>";
+        return;
+    }
+
+    danceHistory.slice().reverse().forEach(entry => {
+        const div = document.createElement("div");
+        div.style.padding = "10px";
+        div.style.marginBottom = "8px";
+        div.style.border = "1px solid rgba(255,0,204,0.3)";
+        div.style.borderRadius = "10px";
+        div.style.background = "rgba(255,0,204,0.08)";
+
+        div.innerHTML = `
+            <b>Private ${entry.id}</b><br>
+            🕒 ${entry.time}<br>
+            💰 Gesamt: ${entry.total}$<br>
+            👯 Anteil pro Tänzerin: ${entry.perDancer}$
+        `;
+
+        listDisplay.appendChild(div);
+    });
 }
 </script>
 
