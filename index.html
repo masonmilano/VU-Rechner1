@@ -649,8 +649,7 @@ document.getElementById("barControls").style.display = "none";
         document.getElementById("secPanel").style.display = "block";
     }
 }
-loadDanceData();
-render();
+
 
 function toggleGuide(){
     const modal = document.getElementById("guideModal");
@@ -694,7 +693,6 @@ function startDance() {
     }, 1000);
 }
 
-/* STOP */
 function stopDance() {
     if (!danceRunning) return;
 
@@ -709,31 +707,24 @@ function stopDance() {
 
     const now = new Date().toLocaleTimeString();
 
-   danceHistory.push({
-    id: danceCount,
-    time: now,
-    total: result.total,
-    perDancer: result.perDancer
-});
-
-/* Gesamt adden */
-danceTotalMoney += result.total;
-totalDanceDisplay.innerText = danceTotalMoney;
-
-renderDanceHistory();
-saveDanceData();
-
-    listDisplay.prepend(entry);
+    danceHistory.push({
+        id: danceCount,
+        time: now,
+        total: result.total,
+        perDancer: result.perDancer
+    });
 
     /* Gesamt adden */
     danceTotalMoney += result.total;
     totalDanceDisplay.innerText = danceTotalMoney;
 
+    renderDanceHistory();
+    saveDanceData();
+
     /* RESET TIMER */
     danceSeconds = 0;
     updateDanceUI();
 }
-
 /* BERECHNUNG */
 function calculateDance() {
     const dancers = Math.max(1, parseInt(document.getElementById("dancerCount").value) || 1);
@@ -809,6 +800,8 @@ function renderDanceHistory() {
         listDisplay.appendChild(div);
     });
 }
+render();
+loadDanceData();
 </script>
 
 </body>
