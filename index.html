@@ -17,11 +17,29 @@ body {
 
 h1 {
     margin-top: 20px;
-    font-size: 34px;
+    font-size: 38px;
     font-family: "Orbitron", sans-serif;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: #ff4dd2;
-    text-shadow: 0 0 10px #ff00cc, 0 0 25px #ff00cc;
+    text-shadow:
+        0 0 5px #ff00cc,
+        0 0 15px #ff00cc,
+        0 0 30px #ff00cc,
+        0 0 60px #ff00cc;
+
+    animation: flicker 3s infinite, pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { text-shadow: 0 0 10px #ff00cc, 0 0 25px #ff00cc; }
+    50% { text-shadow: 0 0 20px #ff00cc, 0 0 60px #ff00cc; }
+}
+
+@keyframes flicker {
+    0%, 92%, 100% { opacity: 1; }
+    93% { opacity: 0.4; }
+    96% { opacity: 0.2; }
+    97% { opacity: 1; }
 }
 
 h2 {
@@ -77,7 +95,6 @@ h2 {
 .item:hover {
     transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 0, 204, 0.6);
-    border: 1px solid rgba(255, 0, 204, 0.7);
 }
 
 button {
@@ -89,7 +106,6 @@ button {
     color: white;
     font-weight: 600;
     border-radius: 10px;
-    transition: 0.2s;
     margin-right: 6px;
 }
 
@@ -139,7 +155,7 @@ textarea {
 <button onclick="resetAll()">🔄 Reset</button>
 <button onclick="undoAction()">↩️ Undo</button>
 
-<textarea id="logOutput" placeholder="Discord Log erscheint hier..."></textarea>
+<textarea id="logOutput"></textarea>
 
 <div class="footer">by Mason Milano</div>
 
@@ -166,6 +182,15 @@ const container = document.getElementById("container");
 const totalDisplay = document.getElementById("total");
 
 let displayedTotal = 0;
+
+/* 🔊 SOUNDS */
+const clickSound = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
+const hoverSound = new Audio("https://www.myinstants.com/media/sounds/mouse-hover.mp3");
+
+function play(sound) {
+    sound.currentTime = 0;
+    sound.play();
+}
 
 function updateDate() {
     const now = new Date();
@@ -220,10 +245,18 @@ function render() {
                 ${p.count}
             `;
 
+            /* CLICK */
             div.onclick = () => {
                 p.count++;
                 actionHistory.push({ name: p.name, change: +1 });
+                play(clickSound);
                 render();
+            };
+
+            /* HOVER - IMMER */
+            div.onmouseenter = () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play();
             };
 
             itemsDiv.appendChild(div);
@@ -241,12 +274,12 @@ function undoAction() {
     if (actionHistory.length === 0) return;
 
     const last = actionHistory.pop();
-
     const product = products.find(p => p.name === last.name);
-    if (!product) return;
 
-    product.count -= last.change;
-    if (product.count < 0) product.count = 0;
+    if (product) {
+        product.count -= last.change;
+        if (product.count < 0) product.count = 0;
+    }
 
     render();
 }
@@ -266,8 +299,8 @@ function generateLog() {
         }
     });
 
-    log += `\n📊 **Gesamt Artikel:** ${totalItems}`;
-    log += `\n💰 **Gesamt Umsatz:** ${totalMoney}$`;
+    log += `\n📊 Gesamt Artikel: ${totalItems}`;
+    log += `\n💰 Gesamt Umsatz: ${totalMoney}$`;
 
     document.getElementById("logOutput").value = log;
 }
