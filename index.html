@@ -337,8 +337,8 @@ textarea::-webkit-scrollbar-thumb:hover {
 <input type="text" id="dancerName" placeholder="z. B. Candy" maxlength="30">
        <!-- Timer -->
 <div class="dance-time-box">
-    ⏱️ <span id="danceTime">0</span>s
-</div>
+    ⏱️ <span id="danceTime">00:00</span>
+</div>>
 
         <!-- Preis -->
         <div style="font-size:20px; margin-bottom:15px;">
@@ -730,36 +730,28 @@ function stopDance() {
     danceRunning = false;
 
     const result = calculateDance();
-
     if (result.total <= 0) return;
 
     danceCount++;
 
-   const now = new Date().toLocaleTimeString();
-const dancerName = document.getElementById("dancerName").value.trim() || "Unbekannt";
+    const now = new Date().toLocaleTimeString();
+    const dancerName = document.getElementById("dancerName").value.trim() || "Unbekannt";
 
-danceHistory.push({
-    id: danceCount,
-    time: now,
-    name: dancerName,
-    total: result.total,
-    perDancer: result.perDancer
-});
+    danceHistory.push({
+        id: danceCount,
+        time: now,
+        name: dancerName,
+        total: result.total,
+        perDancer: result.perDancer
+    });
 
-    /* Gesamt adden */
     danceTotalMoney += result.total;
-    totalDanceDisplay.innerText = danceTotalMoney;
+    totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
 
-/* RESET TIMER */
-document.getElementById("dancerName").value = ""; // 👈 HIER EINFÜGEN
-
-danceSeconds = 0;
-updateDanceUI();
-    
     renderDanceHistory();
     saveDanceData();
 
-    /* RESET TIMER */
+    document.getElementById("dancerName").value = "";
     danceSeconds = 0;
     updateDanceUI();
 }
@@ -783,7 +775,7 @@ function updateDanceUI() {
     timeDisplay.innerText = formatTime(danceSeconds);
 
     const result = calculateDance();
-    priceDisplay.innerText = result.total;
+    priceDisplay.innerText = formatMoney(result.total);
 }
     function saveDanceData() {
     const data = {
