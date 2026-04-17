@@ -330,23 +330,20 @@ function generateLog() {
     document.getElementById("logOutput").value = log;
 }
 
-/* 👉 HIER IST DIE NEUE FUNKTION */
 function copyLog(){
-    const text = document.getElementById("logOutput").value;
+    const textarea = document.getElementById("logOutput");
 
-    if(!text){
+    if(!textarea.value){
         alert("❌ Kein Log zum Kopieren!");
         return;
     }
 
-    navigator.clipboard.writeText(text);
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // Für Mobile
+
+    document.execCommand("copy");
 
     alert("✅ Log kopiert!");
-}
-    log += `\n📊 Gesamt Artikel: ${totalItems}`;
-    log += `\n💰 Gesamt Umsatz: ${totalMoney}$`;
-
-    document.getElementById("logOutput").value = log;
 }
 
 function resetAll() {
