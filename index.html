@@ -753,8 +753,9 @@ function stopDance() {
     danceTotalMoney += result.total;
     totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
 
-    renderDanceHistory();
-    saveDanceData();
+renderDanceHistory();
+renderDancerStats();
+saveDanceData();
 
     document.getElementById("dancerName").value = "";
     danceSeconds = 0;
@@ -806,9 +807,9 @@ function deleteDance(index) {
 
     // Anzeige updaten
     totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
-saveDanceData();
 renderDanceHistory();
 renderDancerStats();
+saveDanceData();
     
 }
 function loadDanceData() {
