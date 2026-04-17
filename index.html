@@ -228,10 +228,21 @@ textarea::-webkit-scrollbar-thumb:hover {
     padding: 20px;
 }
 
-    #dancePanel {
-    min-height: calc(100vh - 140px);
-    justify-content: center;
-    align-items: center;
+  #dancePanel {
+    display: block;
+    padding: 20px 0 40px;
+}
+
+#dancePanel .category {
+    width: 92%;
+    max-width: 950px;
+    margin: 0 auto 20px auto;
+}
+
+#dancePanel .total {
+    width: 92%;
+    max-width: 950px;
+    margin: 20px auto 0 auto;
 }
 
 #dancePanel .category {
@@ -605,7 +616,7 @@ function selectRole(role) {
     }
 
    if (role === "dance") {
-    document.getElementById("dancePanel").style.display = "flex";
+    document.getElementById("dancePanel").style.display = "block";
     updateDanceUI();
 }
 
