@@ -160,6 +160,69 @@ textarea::-webkit-scrollbar-thumb:hover {
     color: #666;
     font-size: 12px;
 }
+/* 📖 MODAL BACKGROUND */
+.guide-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.25s ease;
+}
+
+/* sichtbar */
+.guide-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* BOX */
+.guide-box {
+    width: 85%;
+    max-width: 520px;
+    background: rgba(20, 0, 15, 0.95);
+    border: 1px solid #ff00cc;
+    border-radius: 16px;
+    padding: 18px;
+
+    box-shadow: 0 0 25px #ff00cc;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: 0.25s ease;
+
+    color: white;
+    text-align: left;
+}
+
+/* ANIMATION IN */
+.guide-modal.active .guide-box {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* TEXT */
+.guide-box h2 {
+    color: #ff4dd2;
+    text-align: center;
+    font-family: "Orbitron", sans-serif;
+}
+
+.guide-content h3 {
+    color: #ff00cc;
+}
+
+.guide-content p {
+    font-size: 13px;
+    opacity: 0.9;
+}
 </style>
 </head>
 
@@ -178,8 +241,38 @@ textarea::-webkit-scrollbar-thumb:hover {
 <button onclick="resetAll()">🔄 Reset</button>
 <button onclick="undoAction()">↩️ Undo</button>
 <button onclick="copyLog()">📋 Kopieren</button>
+<button onclick="toggleGuide()">📖 Anleitung</button>
 
 <textarea id="logOutput"></textarea>
+
+<!-- 📖 ANLEITUNG POPUP -->
+<div id="guideModal" class="guide-modal">
+  <div class="guide-box">
+
+    <h2>📖 Anleitung</h2>
+
+    <div class="guide-content">
+      <h3>🖱️ Bedienung</h3>
+      <p><b>Linksklick auf ein Item</b><br>→ Fügt +1 zum Artikel hinzu</p>
+      <p><b>Rechtsklick auf ein Item</b><br>→ Entfernt -1 vom Artikel</p>
+
+      <h3>💰 Funktionen</h3>
+      <p>🧾 Log erstellen → Umsatzbericht</p>
+      <p>📋 Kopieren → Log kopieren</p>
+      <p>🔄 Reset → alles zurücksetzen</p>
+      <p>↩️ Undo → letzte Aktion</p>
+
+      <h3>📊 Anzeige</h3>
+      <p>Kategorien: 🍹 Getränke / 🍔 Essen / 🎁 Extra</p>
+
+      <h3>🎮 Hinweis</h3>
+      <p>Nur RP-System – keine Speicherung</p>
+    </div>
+
+    <button onclick="toggleGuide()">Schließen</button>
+
+  </div>
+</div>
 
 <div class="footer">by Mason Milano</div>
 
@@ -408,6 +501,20 @@ function fallbackCopy(textArea){
 }
 
 render();
+
+function toggleGuide(){
+    const modal = document.getElementById("guideModal");
+    modal.classList.toggle("active");
+}
+
+// Klick außerhalb schließt Fenster
+window.addEventListener("click", (e) => {
+    const modal = document.getElementById("guideModal");
+    if (e.target === modal) {
+        modal.classList.remove("active");
+    }
+});
+    
 </script>
 
 </body>
