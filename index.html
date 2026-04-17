@@ -154,8 +154,7 @@ textarea {
 <button onclick="generateLog()">🧾 Log erstellen</button>
 <button onclick="resetAll()">🔄 Reset</button>
 <button onclick="undoAction()">↩️ Undo</button>
-<button onclick="copyLog()">📋 Kopieren</button>
-    
+
 <textarea id="logOutput"></textarea>
 
 <div class="footer">by Mason Milano</div>
@@ -309,41 +308,11 @@ function generateLog() {
             log += `- ${p.name} x${p.count} = ${sum}$\n`;
         }
     });
-function generateLog() {
-    let log = "📦 **Ausgaben:**\n";
-    let totalMoney = 0;
-    let totalItems = 0;
-
-    products.forEach(p => {
-        if (p.count > 0) {
-            const sum = p.price * p.count;
-            totalMoney += sum;
-            totalItems += p.count;
-
-            log += `- ${p.name} x${p.count} = ${sum}$\n`;
-        }
-    });
 
     log += `\n📊 Gesamt Artikel: ${totalItems}`;
     log += `\n💰 Gesamt Umsatz: ${totalMoney}$`;
 
     document.getElementById("logOutput").value = log;
-}
-
-function copyLog(){
-    const textarea = document.getElementById("logOutput");
-
-    if(!textarea.value){
-        alert("❌ Kein Log zum Kopieren!");
-        return;
-    }
-
-    textarea.select();
-    textarea.setSelectionRange(0, 99999); // Für Mobile
-
-    document.execCommand("copy");
-
-    alert("✅ Log kopiert!");
 }
 
 function resetAll() {
