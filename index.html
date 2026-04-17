@@ -715,13 +715,8 @@ function calculateDance() {
     const dancers = parseInt(document.getElementById("dancerCount").value);
     const customers = parseInt(document.getElementById("customerCount").value);
 
-    /* BASE */
-    let base = 300000 + (customers - 1) * 200000;
-
-    /* WICHTIG: weitere Tänzerinnen */
-    if (dancers > 1) {
-        base += (dancers - 1) * 700000;
-    }
+  /* BASE */
+let base = (dancers * 300000) + ((customers - 1) * 200000);
 
     /* ZEIT BLÖCKE */
     const blocks = Math.floor(danceSeconds / 900);
