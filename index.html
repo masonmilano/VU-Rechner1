@@ -223,6 +223,10 @@ textarea::-webkit-scrollbar-thumb:hover {
     font-size: 13px;
     opacity: 0.9;
 }
+#roleSelect .item {
+    font-size: 20px;
+    padding: 20px;
+}
 </style>
 </head>
 
@@ -231,7 +235,27 @@ textarea::-webkit-scrollbar-thumb:hover {
 <h1>Vanilla Unicorn Rechner</h1>
 <h2 id="date"></h2>
 
-<div class="container" id="container"></div>
+<!-- START SCREEN -->
+<div id="roleSelect" class="container">
+    <div class="item" onclick="selectRole('bar')">🍹 Barkeeper</div>
+    <div class="item" onclick="selectRole('dance')">💃 Tänzerinnen</div>
+    <div class="item" onclick="selectRole('sec')">🛡️ Security</div>
+</div>
+
+<!-- BARKeeper PANEL -->
+<div id="barPanel" style="display:none;">
+    <div class="container" id="container"></div>
+</div>
+
+<!-- Tänzerinnen PANEL (leer erstmal) -->
+<div id="dancePanel" style="display:none;">
+    <h2>💃 Tänzerinnen Panel kommt...</h2>
+</div>
+
+<!-- Security PANEL -->
+<div id="secPanel" style="display:none;">
+    <h2>🛡️ Security Panel kommt...</h2>
+</div>
 
 <div class="total">
 💰 Gesamt: <span id="total">0</span>$
@@ -499,7 +523,27 @@ function fallbackCopy(textArea){
         alert("❌ Kopieren fehlgeschlagen");
     }
 }
+function selectRole(role) {
+    // alles verstecken
+    document.getElementById("roleSelect").style.display = "none";
+    document.getElementById("barPanel").style.display = "none";
+    document.getElementById("dancePanel").style.display = "none";
+    document.getElementById("secPanel").style.display = "none";
 
+    // richtiges Panel anzeigen
+    if (role === "bar") {
+        document.getElementById("barPanel").style.display = "block";
+        render(); // dein aktueller Rechner
+    }
+
+    if (role === "dance") {
+        document.getElementById("dancePanel").style.display = "block";
+    }
+
+    if (role === "sec") {
+        document.getElementById("secPanel").style.display = "block";
+    }
+}
 render();
 
 function toggleGuide(){
