@@ -154,6 +154,7 @@ textarea {
 <button onclick="generateLog()">🧾 Log erstellen</button>
 <button onclick="resetAll()">🔄 Reset</button>
 <button onclick="undoAction()">↩️ Undo</button>
+<button onclick="copyLog()">📋 Kopieren</button>
 
 <textarea id="logOutput"></textarea>
 
@@ -322,6 +323,36 @@ function resetAll() {
     document.getElementById("logOutput").value = "";
 }
 
+/* 👉 HIER EINFÜGEN */
+function copyLog(){
+    const textArea = document.getElementById("logOutput");
+    const text = textArea.value;
+
+    if(!text){
+        alert("❌ Kein Log zum Kopieren!");
+        return;
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+            .then(() => alert("✅ Log kopiert!"))
+            .catch(() => fallbackCopy(textArea));
+    } else {
+        fallbackCopy(textArea);
+    }
+}
+
+function fallbackCopy(textArea){
+    textArea.select();
+    textArea.setSelectionRange(0, 99999);
+
+    try {
+        document.execCommand("copy");
+        alert("✅ Log kopiert!");
+    } catch {
+        alert("❌ Kopieren fehlgeschlagen");
+    }
+}
 render();
 </script>
 
