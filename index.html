@@ -161,6 +161,15 @@ textarea {
 <div class="footer">by Mason Milano</div>
 
 <script>
+
+/* 🔊 SOUND UNLOCK (FIX) */
+let soundUnlocked = false;
+
+document.addEventListener("click", () => {
+    soundUnlocked = true;
+}, { once: true });
+
+/* PRODUCTS */
 const products = [
     {name: "Champagna", price: 5000, count: 0, cat: "Getränke"},
     {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
@@ -184,21 +193,21 @@ const totalDisplay = document.getElementById("total");
 
 let displayedTotal = 0;
 
-/* 🔊 SOUNDS */
+/* SOUNDS */
 const hoverSound = new Audio("https://actions.google.com/sounds/v1/ui/ui_tap_variant_1.ogg");
 const clickSound = new Audio("https://actions.google.com/sounds/v1/clicks/click_2.ogg");
 const undoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg");
 const cashSound = new Audio("https://actions.google.com/sounds/v1/cash_register/cash_register_01.ogg");
 
-// Lautstärke Setup
-hoverSound.volume = 0.08;
-clickSound.volume = 0.25;
-undoSound.volume = 0.2;
-cashSound.volume = 0.35;
+hoverSound.volume = 0.2;
+clickSound.volume = 0.4;
+undoSound.volume = 0.35;
+cashSound.volume = 0.5;
 
-function play(sound) {
+function play(sound){
+    sound.pause();
     sound.currentTime = 0;
-    sound.play();
+    sound.play().catch(() => {});
 }
 
 function updateDate() {
@@ -257,21 +266,18 @@ function render() {
             /* CLICK */
             div.onclick = () => {
                 p.count++;
-                actionHistory.push({ name: p.name, change: +1 });
+                actionHistory.push({ name: p.name, change: 1 });
                 play(clickSound);
                 render();
             };
 
-            /* HOVER (IMMER) */
+            /* HOVER FIX */
             div.onmouseenter = () => {
-                hoverSound.currentTime = 0;
-                hoverSound.play();
-            };
+                if (!soundUnlocked) return;
 
-            /* MOBILE TOUCH */
-            div.ontouchstart = () => {
-                hoverSound.currentTime = 0;
-                hoverSound.play();
+                const sound = hoverSound.cloneNode();
+                sound.volume = 0.2;
+                sound.play().catch(() => {});
             };
 
             itemsDiv.appendChild(div);
@@ -344,7 +350,6 @@ function resetAll() {
     document.getElementById("logOutput").value = "";
 }
 
-/* 👉 HIER EINFÜGEN */
 function copyLog(){
     const textArea = document.getElementById("logOutput");
     const text = textArea.value;
@@ -355,25 +360,13 @@ function copyLog(){
     }
 
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text)
-            .then(() => alert("✅ Log kopiert!"))
-            .catch(() => fallbackCopy(textArea));
+        navigator.clipboard.writeText(text);
     } else {
-        fallbackCopy(textArea);
-    }
-}
-
-function fallbackCopy(textArea){
-    textArea.select();
-    textArea.setSelectionRange(0, 99999);
-
-    try {
+        textArea.select();
         document.execCommand("copy");
-        alert("✅ Log kopiert!");
-    } catch {
-        alert("❌ Kopieren fehlgeschlagen");
     }
 }
+
 render();
 </script>
 
