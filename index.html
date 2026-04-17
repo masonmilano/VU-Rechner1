@@ -611,12 +611,12 @@ function render() {
                 ${p.count}
             `;
 
-            /* CLICK */
-           div.onclick = () => {
+div.onclick = () => {
     // LINKSKLICK = +1
     p.count++;
     actionHistory.push({ name: p.name, change: +1 });
     play(clickSound);
+    saveBarData();
     render();
 };
 
@@ -628,6 +628,7 @@ div.oncontextmenu = (e) => {
         p.count--;
         actionHistory.push({ name: p.name, change: -1 });
         play(clickSound);
+        saveBarData();
         render();
     }
 };
@@ -652,8 +653,40 @@ div.oncontextmenu = (e) => {
         container.appendChild(section);
     });
 
-    animateTotal(total);
+        animateTotal(total);
 }
+
+function saveBarData() {
+    localStorage.setItem("vuBarProducts", JSON.stringify(products));
+    localStorage.setItem("vuBarHistory", JSON.stringify(actionHistory));
+}
+
+function loadBarData() {
+    const savedProducts = localStorage.getItem("vuBarProducts");
+    const savedHistory = localStorage.getItem("vuBarHistory");
+
+    if (savedProducts) {
+        const parsedProducts = JSON.parse(savedProducts);
+
+        products.forEach((product, index) => {
+            if (parsedProducts[index]) {
+                product.count = parsedProducts[index].count || 0;
+            }
+        });
+    }
+
+    if (savedHistory) {
+        actionHistory = JSON.parse(savedHistory) || [];
+    }
+}
+
+function clearBarData() {
+    localStorage.removeItem("vuBarProducts");
+    localStorage.removeItem("vuBarHistory");
+}
+
+function clearDanceHistory() {
+    
 function clearDanceHistory() {
     if (!confirm("Wirklich gesamten Verlauf löschen?")) return;
 
@@ -679,7 +712,8 @@ function undoAction() {
         if (product.count < 0) product.count = 0;
     }
 
-    render();
+saveBarData();
+render();
 }
 
 function generateLog(){
@@ -720,12 +754,7 @@ function generateLog(){
     document.getElementById("logOutput").value = log;
 }
 
-function resetAll() {
-    products.forEach(p => p.count = 0);
-    actionHistory = [];
-    render();
-    document.getElementById("logOutput").value = "";
-}
+ products.forEach(p => p.count = 0);
 
 /* 👉 HIER EINFÜGEN */
 function copyLog(){
@@ -1012,6 +1041,7 @@ function renderDancerStats() {
         dancerStatsDisplay.appendChild(div);
     });
 }
+loadBarData();
 render();
 loadDanceData();
 </script>
