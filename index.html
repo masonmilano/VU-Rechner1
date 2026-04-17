@@ -356,7 +356,7 @@ textarea::-webkit-scrollbar-thumb:hover {
         <div class="category-title">📋 Verlauf</div>
         <div id="danceList"></div>
     </div>
-
+<button onclick="clearDanceHistory()">🗑️ Verlauf löschen</button>
     <!-- Gesamt -->
     <div class="total">
         💰 Gesamt: <span id="danceTotal">0</span>$
@@ -555,7 +555,18 @@ div.oncontextmenu = (e) => {
 
     animateTotal(total);
 }
+function clearDanceHistory() {
+    if (!confirm("Wirklich gesamten Verlauf löschen?")) return;
 
+    danceHistory = [];
+    danceTotalMoney = 0;
+    danceCount = 0;
+
+    totalDanceDisplay.innerText = "0";
+
+    saveDanceData();
+    renderDanceHistory();
+}
 function undoAction() {
     if (actionHistory.length === 0) return;
 
@@ -783,7 +794,25 @@ function updateDanceUI() {
 
     localStorage.setItem("vuDanceData", JSON.stringify(data));
 }
+function deleteDance(index) {
+    const entry = danceHistory[index];
 
+    if (!entry) return;
+
+    if (!confirm("Dieses Private wirklich löschen?")) return;
+
+    // Geld abziehen
+    danceTotalMoney -= entry.total;
+
+    // Eintrag entfernen
+    danceHistory.splice(index, 1);
+
+    // Anzeige updaten
+    totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
+
+    saveDanceData();
+    renderDanceHistory();
+}
 function loadDanceData() {
     const saved = localStorage.getItem("vuDanceData");
     if (!saved) {
@@ -809,25 +838,32 @@ function renderDanceHistory() {
         return;
     }
 
-    danceHistory.slice().reverse().forEach(entry => {
-        const div = document.createElement("div");
-        div.style.padding = "10px";
-        div.style.marginBottom = "8px";
-        div.style.border = "1px solid rgba(255,0,204,0.3)";
-        div.style.borderRadius = "10px";
-        div.style.background = "rgba(255,0,204,0.08)";
+    danceHistory
+.slice()
+.reverse()
+.forEach((entry, index) => {
 
-       div.innerHTML = `
-    <b>Private ${entry.id}</b><br>
-    💃 Tänzer/in: ${entry.name || "Unbekannt"}<br>
-    🕒 ${entry.time}<br>
-    💰 Gesamt: ${formatMoney(entry.total)}$<br>
-    👯 Anteil pro Tänzer/in: ${formatMoney(entry.perDancer)}$
-`;
+    const realIndex = danceHistory.length - 1 - index;
 
-        listDisplay.appendChild(div);
-    });
-}
+    const div = document.createElement("div");
+    div.style.padding = "10px";
+    div.style.marginBottom = "8px";
+    div.style.border = "1px solid rgba(255,0,204,0.3)";
+    div.style.borderRadius = "10px";
+    div.style.background = "rgba(255,0,204,0.08)";
+
+    div.innerHTML = `
+        <b>Private ${entry.id}</b><br>
+        💃 Tänzer/in: ${entry.name || "Unbekannt"}<br>
+        🕒 ${entry.time}<br>
+        💰 Gesamt: ${formatMoney(entry.total)}$<br>
+        👯 Anteil pro Tänzer/in: ${formatMoney(entry.perDancer)}$<br><br>
+
+        <button onclick="deleteDance(${realIndex})">❌ Löschen</button>
+    `;
+
+    listDisplay.appendChild(div);
+});
 render();
 loadDanceData();
 </script>
