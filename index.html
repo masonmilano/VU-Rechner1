@@ -361,7 +361,10 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="total">
         💰 Gesamt: <span id="danceTotal">0</span>$
     </div>
-
+<div class="category">
+    <div class="category-title">📊 Rangliste</div>
+    <div id="dancerStats"></div>
+</div>
 </div>
 
 <!-- Security PANEL -->
@@ -710,7 +713,7 @@ const timeDisplay = document.getElementById("danceTime");
 const priceDisplay = document.getElementById("dancePrice");
 const listDisplay = document.getElementById("danceList");
 const totalDanceDisplay = document.getElementById("danceTotal");
-
+const dancerStatsDisplay = document.getElementById("dancerStats");
 /* START */
 function startDance() {
     if (danceRunning) return;
@@ -855,7 +858,45 @@ function renderDanceHistory() {
             listDisplay.appendChild(div);
         });
 }
+function renderDancerStats() {
+    dancerStatsDisplay.innerHTML = "";
 
+    if (danceHistory.length === 0) {
+        dancerStatsDisplay.innerHTML = "<div style='opacity:0.6;'>Noch keine Daten vorhanden.</div>";
+        return;
+    }
+
+    const stats = {};
+
+    danceHistory.forEach(entry => {
+        const name = entry.name || "Unbekannt";
+
+        if (!stats[name]) {
+            stats[name] = 0;
+        }
+
+        stats[name] += entry.total;
+    });
+
+    const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+
+    sortedStats.forEach(([name, total], index) => {
+        const div = document.createElement("div");
+        div.style.padding = "10px";
+        div.style.marginBottom = "8px";
+        div.style.border = "1px solid rgba(255,0,204,0.3)";
+        div.style.borderRadius = "10px";
+        div.style.background = "rgba(255,0,204,0.08)";
+        div.style.textAlign = "left";
+
+        div.innerHTML = `
+            <b>#${index + 1} ${name}</b><br>
+            💰 Umsatz: ${formatMoney(total)}$
+        `;
+
+        dancerStatsDisplay.appendChild(div);
+    });
+}
 render();
 loadDanceData();
 </script>
