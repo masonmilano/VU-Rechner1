@@ -252,24 +252,13 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="category">
         <div class="category-title">💃 Private Dance</div>
 
-        <!-- Einstellungen -->
-        <div style="margin-bottom:15px;">
-            <label>Anzahl Tänzerinnen:</label><br>
-            <select id="dancerCount">
-                <option value="1">1 Tänzerin</option>
-                <option value="2">2 Tänzerinnen</option>
-                <option value="3">3 Tänzerinnen</option>
-            </select>
+       <label>Anzahl Tänzerinnen:</label><br>
+<input type="number" id="dancerCount" min="1" value="1" oninput="updateDanceUI()">
 
-            <br><br>
+<br><br>
 
-            <label>Anzahl Kunden:</label><br>
-            <select id="customerCount">
-                <option value="1">1 Kunde</option>
-                <option value="2">2 Kunden</option>
-                <option value="3">3 Kunden</option>
-            </select>
-        </div>
+<label>Anzahl Kunden:</label><br>
+<input type="number" id="customerCount" min="1" value="1" oninput="updateDanceUI()">
 
         <!-- Timer -->
         <div style="font-size:20px; margin-bottom:10px;">
