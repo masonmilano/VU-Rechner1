@@ -371,11 +371,13 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="category">
         <div class="category-title">💃 Private Dance</div>
 
-       <label>Anzahl Tänzerinnen:</label><br>
-<div class="number-control">
-    <div class="number-btn" onclick="changeValue('dancerCount', -1)">−</div>
-    <input type="number" id="dancerCount" min="1" value="1" oninput="updateDanceUI()">
-    <div class="number-btn" onclick="changeValue('dancerCount', 1)">+</div>
+      <div class="category">
+    <div class="category-title">💃 Private Dance</div>
+
+    <div id="privateContainer"></div>
+
+    <button onclick="addPrivate()">➕ Private erstellen</button>
+    <button onclick="toggleDanceGuide()">📖 Anleitung</button>
 </div>
 
 <br><br>
@@ -818,10 +820,7 @@ function selectRole(role) {
         render();
     }
 
-    if (role === "dance") {
-        document.getElementById("dancePanel").style.display = "block";
-        updateDanceUI();
-    }
+   
 
     if (role === "sec") {
         document.getElementById("secPanel").style.display = "block";
@@ -858,52 +857,209 @@ window.addEventListener("click", (e) => {
         danceGuideModal.classList.remove("active");
     }
 });
-    /* =========================
-   💃 DANCE SYSTEM
+    <script>
+/* =========================
+   💃 DANCE SYSTEM (MULTI PRIVATE)
 ========================= */
-
-let danceInterval = null;
-let danceSeconds = 0;
-let danceRunning = false;
 
 let danceTotalMoney = 0;
 let danceCount = 0;
 let danceHistory = [];
 
+let privates = [];
+let nextPrivateId = 1;
+
 /* UI ELEMENTS */
-const timeDisplay = document.getElementById("danceTime");
-const priceDisplay = document.getElementById("dancePrice");
 const listDisplay = document.getElementById("danceList");
 const totalDanceDisplay = document.getElementById("danceTotal");
 const dancerStatsDisplay = document.getElementById("dancerStats");
-/* START */
-function startDance() {
-    if (danceRunning) return;
 
-    danceRunning = true;
-
-    danceInterval = setInterval(() => {
-        danceSeconds++;
-        updateDanceUI();
-    }, 1000);
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
 }
 
-function stopDance() {
-    if (!danceRunning) return;
+function formatMoney(amount) {
+    return Number(amount).toLocaleString("de-DE");
+}
 
-    clearInterval(danceInterval);
-    danceRunning = false;
+function addPrivate() {
+    const newPrivate = {
+        id: nextPrivateId,
+        title: `Private ${nextPrivateId}`,
+        dancers: 1,
+        customers: 1,
+        dancerName: "",
+        seconds: 0,
+        running: false,
+        interval: null
+    };
 
-    const result = calculateDance();
-    if (result.total <= 0) return;
+    privates.push(newPrivate);
+    nextPrivateId++;
+    renderPrivates();
+}
+
+function renderPrivates() {
+    const container = document.getElementById("privateContainer");
+    container.innerHTML = "";
+
+    if (privates.length === 0) {
+        container.innerHTML = `
+            <div style="
+                opacity:0.65;
+                padding:16px;
+                border:1px solid rgba(255,0,204,0.2);
+                border-radius:12px;
+                background:rgba(255,0,204,0.05);
+            ">
+                Noch kein Private erstellt.
+            </div>
+        `;
+        return;
+    }
+
+    privates.forEach((p) => {
+        const result = calculatePrivate(p);
+
+        const div = document.createElement("div");
+        div.style.marginTop = "18px";
+        div.style.padding = "16px";
+        div.style.border = "1px solid rgba(255,0,204,0.3)";
+        div.style.borderRadius = "14px";
+        div.style.background = "rgba(255,0,204,0.06)";
+        div.style.boxShadow = "0 0 12px rgba(255,0,204,0.08)";
+
+        div.innerHTML = `
+            <div class="category-title" style="margin-bottom:14px;">${p.title}</div>
+
+            <label>Anzahl Tänzerinnen:</label><br>
+            <div class="number-control" style="margin-top:8px;">
+                <div class="number-btn" onclick="changePrivateValue(${p.id}, 'dancers', -1)">−</div>
+                <input type="number" min="1" value="${p.dancers}" 
+                    onchange="setPrivateValue(${p.id}, 'dancers', this.value)">
+                <div class="number-btn" onclick="changePrivateValue(${p.id}, 'dancers', 1)">+</div>
+            </div>
+
+            <br><br>
+
+            <label>Anzahl Kunden:</label><br>
+            <div class="number-control" style="margin-top:8px;">
+                <div class="number-btn" onclick="changePrivateValue(${p.id}, 'customers', -1)">−</div>
+                <input type="number" min="1" value="${p.customers}" 
+                    onchange="setPrivateValue(${p.id}, 'customers', this.value)">
+                <div class="number-btn" onclick="changePrivateValue(${p.id}, 'customers', 1)">+</div>
+            </div>
+
+            <br><br>
+
+            <label>Name Tänzer/in:</label><br>
+            <input 
+                type="text"
+                maxlength="30"
+                placeholder="z. B. Candy"
+                value="${escapeHtml(p.dancerName)}"
+                oninput="setPrivateName(${p.id}, this.value)"
+            >
+
+            <div class="dance-time-box" style="font-size:52px; margin-top:18px;">
+                ⏱️ ${formatTime(p.seconds)}
+            </div>
+
+            <div style="font-size:20px; margin-bottom:15px;">
+                💰 Preis: ${formatMoney(result.total)}$
+            </div>
+
+            <button onclick="startPrivate(${p.id})">▶️ Start</button>
+            <button onclick="stopPrivate(${p.id})">⏹️ Stop</button>
+            <button onclick="deletePrivateBox(${p.id})">❌ Entfernen</button>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+function changePrivateValue(id, field, change) {
+    const p = privates.find(x => x.id === id);
+    if (!p) return;
+
+    let value = parseInt(p[field]) || 1;
+    value += change;
+    if (value < 1) value = 1;
+
+    p[field] = value;
+    renderPrivates();
+}
+
+function setPrivateValue(id, field, value) {
+    const p = privates.find(x => x.id === id);
+    if (!p) return;
+
+    let newValue = parseInt(value) || 1;
+    if (newValue < 1) newValue = 1;
+
+    p[field] = newValue;
+    renderPrivates();
+}
+
+function setPrivateName(id, value) {
+    const p = privates.find(x => x.id === id);
+    if (!p) return;
+
+    p.dancerName = value;
+}
+
+function calculatePrivate(p) {
+    const dancers = Math.max(1, parseInt(p.dancers) || 1);
+    const customers = Math.max(1, parseInt(p.customers) || 1);
+
+    const base = (dancers * 300000) + ((customers - 1) * 200000);
+
+    const blocks = Math.floor(p.seconds / 900);
+    const total = base * Math.max(1, blocks);
+
+    const perDancer = Math.floor((total / dancers) * 0.7);
+
+    return { total, perDancer };
+}
+
+function startPrivate(id) {
+    const p = privates.find(x => x.id === id);
+    if (!p || p.running) return;
+
+    p.running = true;
+
+    p.interval = setInterval(() => {
+        p.seconds++;
+        renderPrivates();
+    }, 1000);
+
+    renderPrivates();
+}
+
+function stopPrivate(id) {
+    const p = privates.find(x => x.id === id);
+    if (!p || !p.running) return;
+
+    clearInterval(p.interval);
+    p.interval = null;
+    p.running = false;
+
+    const result = calculatePrivate(p);
+    if (result.total <= 0) {
+        deletePrivateBox(id);
+        return;
+    }
 
     danceCount++;
 
     const now = new Date().toLocaleTimeString();
-    const dancerName = document.getElementById("dancerName").value.trim() || "Unbekannt";
+    const dancerName = p.dancerName.trim() || "Unbekannt";
 
     danceHistory.push({
-        id: danceCount,
+        historyId: danceCount,
+        privateTitle: p.title,
         time: now,
         name: dancerName,
         total: result.total,
@@ -913,70 +1069,45 @@ function stopDance() {
     danceTotalMoney += result.total;
     totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
 
-renderDanceHistory();
-renderDancerStats();
-saveDanceData();
+    saveDanceData();
+    renderDanceHistory();
+    renderDancerStats();
 
-    document.getElementById("dancerName").value = "";
-    danceSeconds = 0;
-    updateDanceUI();
-}
-/* BERECHNUNG */
-function calculateDance() {
-    const dancers = Math.max(1, parseInt(document.getElementById("dancerCount").value) || 1);
-    const customers = Math.max(1, parseInt(document.getElementById("customerCount").value) || 1);
-
-    let base = (dancers * 300000) + ((customers - 1) * 200000);
-
-    const blocks = Math.floor(danceSeconds / 900);
-    const total = base * Math.max(1, blocks);
-
-    const perDancer = Math.floor((total / dancers) * 0.7);
-
-    return { total, perDancer };
+    deletePrivateBox(id);
 }
 
-/* UI UPDATE */
-function updateDanceUI() {
-    timeDisplay.innerText = formatTime(danceSeconds);
+function deletePrivateBox(id) {
+    const index = privates.findIndex(x => x.id === id);
+    if (index === -1) return;
 
-    const result = calculateDance();
-    priceDisplay.innerText = formatMoney(result.total);
+    const p = privates[index];
+    if (p.interval) {
+        clearInterval(p.interval);
+    }
+
+    privates.splice(index, 1);
+    renderPrivates();
 }
-    function saveDanceData() {
+
+function saveDanceData() {
     const data = {
         history: danceHistory,
         totalMoney: danceTotalMoney,
-        count: danceCount
+        count: danceCount,
+        nextPrivateId: nextPrivateId
     };
 
     localStorage.setItem("vuDanceData", JSON.stringify(data));
 }
-function deleteDance(index) {
-    const entry = danceHistory[index];
 
-    if (!entry) return;
-
-    if (!confirm("Dieses Private wirklich löschen?")) return;
-
-    // Geld abziehen
-    danceTotalMoney -= entry.total;
-
-    // Eintrag entfernen
-    danceHistory.splice(index, 1);
-
-    // Anzeige updaten
-    totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
-renderDanceHistory();
-renderDancerStats();
-saveDanceData();
-    
-}
 function loadDanceData() {
     const saved = localStorage.getItem("vuDanceData");
+
     if (!saved) {
+        renderPrivates();
         renderDanceHistory();
         renderDancerStats();
+        totalDanceDisplay.innerText = formatMoney(0);
         return;
     }
 
@@ -985,11 +1116,45 @@ function loadDanceData() {
     danceHistory = data.history || [];
     danceTotalMoney = data.totalMoney || 0;
     danceCount = data.count || 0;
+    nextPrivateId = data.nextPrivateId || 1;
 
     totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
+    renderPrivates();
     renderDanceHistory();
     renderDancerStats();
 }
+
+function clearDanceHistory() {
+    if (!confirm("Wirklich gesamten Verlauf löschen?")) return;
+
+    danceHistory = [];
+    danceTotalMoney = 0;
+    danceCount = 0;
+
+    totalDanceDisplay.innerText = formatMoney(0);
+
+    saveDanceData();
+    renderDanceHistory();
+    renderDancerStats();
+}
+
+function deleteDance(index) {
+    const entry = danceHistory[index];
+    if (!entry) return;
+
+    if (!confirm("Dieses Private wirklich löschen?")) return;
+
+    danceTotalMoney -= entry.total;
+    if (danceTotalMoney < 0) danceTotalMoney = 0;
+
+    danceHistory.splice(index, 1);
+
+    totalDanceDisplay.innerText = formatMoney(danceTotalMoney);
+    saveDanceData();
+    renderDanceHistory();
+    renderDancerStats();
+}
+
 function renderDanceHistory() {
     listDisplay.innerHTML = "";
 
@@ -1012,7 +1177,7 @@ function renderDanceHistory() {
             div.style.background = "rgba(255,0,204,0.08)";
 
             div.innerHTML = `
-                <b>Private ${entry.id}</b><br>
+                <b>${entry.privateTitle || `Private ${entry.historyId}`}</b><br>
                 💃 Tänzer/in: ${entry.name || "Unbekannt"}<br>
                 🕒 ${entry.time}<br>
                 💰 Gesamt: ${formatMoney(entry.total)}$<br>
@@ -1023,6 +1188,7 @@ function renderDanceHistory() {
             listDisplay.appendChild(div);
         });
 }
+
 function renderDancerStats() {
     dancerStatsDisplay.innerHTML = "";
 
@@ -1067,9 +1233,16 @@ function renderDancerStats() {
         dancerStatsDisplay.appendChild(div);
     });
 }
-loadBarData();
-render();
-loadDanceData();
+
+function escapeHtml(text) {
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+</script>
 </script>
 
 </body>
