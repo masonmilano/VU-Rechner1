@@ -393,52 +393,6 @@ textarea::-webkit-scrollbar-thumb:hover {
         <div id="dancerStats"></div>
     </div>
 </div>
-<br><br>
-
-<label>Anzahl Kunden:</label><br>
-<div class="number-control">
-    <div class="number-btn" onclick="changeValue('customerCount', -1)">−</div>
-    <input type="number" id="customerCount" min="1" value="1" oninput="updateDanceUI()">
-    <div class="number-btn" onclick="changeValue('customerCount', 1)">+</div>
-</div>
-
-    <br><br>
-
-<label>Name Tänzer/in:</label><br>
-<input type="text" id="dancerName" placeholder="z. B. Candy" maxlength="30">
-       <!-- Timer -->
-<div class="dance-time-box">
-    ⏱️ <span id="danceTime">00:00</span>
-</div>
-
-        <!-- Preis -->
-        <div style="font-size:20px; margin-bottom:15px;">
-            💰 Preis: <span id="dancePrice">0</span>$
-        </div>
-
-       <!-- Buttons -->
-<button onclick="startDance()">▶️ Start</button>
-<button onclick="stopDance()">⏹️ Stop</button>
-<button onclick="toggleDanceGuide()">📖 Anleitung</button>
-
-    </div>
-
-    <!-- Verlauf -->
-    <div class="category">
-        <div class="category-title">📋 Verlauf</div>
-        <div id="danceList"></div>
-    </div>
-<button onclick="clearDanceHistory()">🗑️ Verlauf löschen</button>
-    <!-- Gesamt -->
-    <div class="total">
-        💰 Gesamt: <span id="danceTotal">0</span>$
-    </div>
-<div class="category">
-    <div class="category-title">📊 Rangliste</div>
-    <div id="dancerStats"></div>
-</div>
-</div>
-
 <!-- Security PANEL -->
 <div id="secPanel" style="display:none;">
     <h2>🛡️ Security Panel kommt...</h2>
@@ -814,36 +768,30 @@ function fallbackCopy(textArea){
     }
 }
 function selectRole(role) {
-    // Startscreen ausblenden
     document.getElementById("roleSelect").style.display = "none";
-
-    // obere Navigation anzeigen
     document.getElementById("topNav").style.display = "flex";
 
-    // alles andere verstecken
     document.getElementById("barPanel").style.display = "none";
     document.getElementById("dancePanel").style.display = "none";
     document.getElementById("secPanel").style.display = "none";
     document.getElementById("barControls").style.display = "none";
 
-    // richtiges Panel anzeigen
     if (role === "bar") {
         document.getElementById("barPanel").style.display = "block";
         document.getElementById("barControls").style.display = "block";
         render();
     }
 
-   
+    if (role === "dance") {
+        document.getElementById("dancePanel").style.display = "block";
+        renderPrivates();
+        renderDanceHistory();
+        renderDancerStats();
+    }
 
     if (role === "sec") {
         document.getElementById("secPanel").style.display = "block";
     }
-}
-    if (role === "dance") {
-    document.getElementById("dancePanel").style.display = "block";
-    renderPrivates();
-    renderDanceHistory();
-    renderDancerStats();
 }
 function goHome() {
     document.getElementById("topNav").style.display = "none";
