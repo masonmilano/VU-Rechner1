@@ -290,7 +290,6 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 #dancePanel {
-    display: block;
     padding: 20px 0 40px;
 }
 
@@ -541,17 +540,7 @@ function animateTotal(newTotal) {
         }
     }, 20);
 }
-function changeValue(id, change) {
-    const input = document.getElementById(id);
-    let value = parseInt(input.value) || 1;
 
-    value += change;
-
-    if (value < 1) value = 1;
-
-    input.value = value;
-    updateDanceUI();
-}
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -1209,7 +1198,10 @@ function escapeHtml(text) {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
 }
-
+updateDate();
+loadBarData();
+render();
+loadDanceData();
 </script>
 
 </body>
