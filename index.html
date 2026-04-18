@@ -371,15 +371,28 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="category">
         <div class="category-title">💃 Private Dance</div>
 
-      <div class="category">
-    <div class="category-title">💃 Private Dance</div>
+        <div id="privateContainer"></div>
 
-    <div id="privateContainer"></div>
+        <button onclick="addPrivate()">➕ Private erstellen</button>
+        <button onclick="toggleDanceGuide()">📖 Anleitung</button>
+    </div>
 
-    <button onclick="addPrivate()">➕ Private erstellen</button>
-    <button onclick="toggleDanceGuide()">📖 Anleitung</button>
+    <div class="category">
+        <div class="category-title">📋 Verlauf</div>
+        <div id="danceList"></div>
+    </div>
+
+    <button onclick="clearDanceHistory()">🗑️ Verlauf löschen</button>
+
+    <div class="total">
+        💰 Gesamt: <span id="danceTotal">0</span>$
+    </div>
+
+    <div class="category">
+        <div class="category-title">📊 Rangliste</div>
+        <div id="dancerStats"></div>
+    </div>
 </div>
-
 <br><br>
 
 <label>Anzahl Kunden:</label><br>
@@ -826,6 +839,12 @@ function selectRole(role) {
         document.getElementById("secPanel").style.display = "block";
     }
 }
+    if (role === "dance") {
+    document.getElementById("dancePanel").style.display = "block";
+    renderPrivates();
+    renderDanceHistory();
+    renderDancerStats();
+}
 function goHome() {
     document.getElementById("topNav").style.display = "none";
     document.getElementById("roleSelect").style.display = "flex";
@@ -857,7 +876,7 @@ window.addEventListener("click", (e) => {
         danceGuideModal.classList.remove("active");
     }
 });
-    <script>
+    
 /* =========================
    💃 DANCE SYSTEM (MULTI PRIVATE)
 ========================= */
@@ -1242,7 +1261,7 @@ function escapeHtml(text) {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
 }
-</script>
+
 </script>
 
 </body>
