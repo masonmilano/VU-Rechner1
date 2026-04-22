@@ -970,10 +970,16 @@ function calculatePrivate(p) {
     const dancers = Math.max(1, parseInt(p.dancers) || 1);
     const customers = Math.max(1, parseInt(p.customers) || 1);
 
-    const base = (dancers * 300000) + ((customers - 1) * 200000);
+    // 1 Kunde = 350k, jeder weitere Kunde +200k
+    const base = 350000 + ((customers - 1) * 200000);
 
-    const blocks = Math.floor(p.seconds / 900);
-    const total = base * Math.max(1, blocks);
+    // Gesamtpreis wird mit Anzahl Tänzerinnen multipliziert
+    const pricePerBlock = base * dancers;
+
+    // 20 Minuten = 1200 Sekunden
+    const blocks = Math.max(1, Math.floor(p.seconds / 1200));
+
+    const total = pricePerBlock * blocks;
 
     const perDancer = Math.floor((total / dancers) * 0.7);
 
