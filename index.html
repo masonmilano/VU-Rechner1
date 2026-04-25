@@ -386,17 +386,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="total">
         💰 Gesamt: <span id="danceTotal">0</span>$
     </div>
-<div style="margin-top:12px;">
-    💸 Rabatt:
-    <input 
-        type="number" 
-        id="discountInput" 
-        min="0" 
-        max="100" 
-        value="0"
-        style="width:80px; text-align:center;"
-    > %
-</div>
+
     <div class="category">
         <div class="category-title">📊 Rangliste</div>
         <div id="dancerStats"></div>
@@ -411,7 +401,17 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="total">
         💰 Gesamt: <span id="total">0</span>$
     </div>
-
+<div style="margin-top:12px;">
+    💸 Rabatt:
+    <input 
+        type="number" 
+        id="discountInput" 
+        min="0" 
+        max="100" 
+        value="0"
+        style="width:80px; text-align:center;"
+    > %
+</div>
     <button onclick="generateLog()">🧾 Log erstellen</button>
     <button onclick="resetAll()">🔄 Reset</button>
     <button onclick="undoAction()">↩️ Undo</button>
@@ -634,6 +634,7 @@ div.oncontextmenu = (e) => {
 const discountedTotal = Math.floor(total - discountAmount);
 
 animateTotal(discountedTotal);
+}
 
 function saveBarData() {
     localStorage.setItem("vuBarProducts", JSON.stringify(products));
