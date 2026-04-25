@@ -687,10 +687,7 @@ actionHistory.push({
         container.appendChild(section);
     });
 
-        const discountAmount = total * (discountPercent / 100);
-const discountedTotal = Math.floor(total - discountAmount);
-
-animateTotal(discountedTotal);
+        animateTotal(Math.floor(total));
 }
 
 function saveBarData() {
@@ -817,7 +814,10 @@ log += `✅ Endbetrag: ${formatMoney(totalMoney)}$`;
 }
 
 function resetAll() {
-    products.forEach(p => p.count = 0);
+    products.forEach(p => {
+    p.count = 0;
+    p.sales = [];
+});
     actionHistory = [];
     clearBarData();
     render();
