@@ -386,7 +386,17 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="total">
         💰 Gesamt: <span id="danceTotal">0</span>$
     </div>
-
+<div style="margin-top:12px;">
+    💸 Rabatt:
+    <input 
+        type="number" 
+        id="discountInput" 
+        min="0" 
+        max="100" 
+        value="0"
+        style="width:80px; text-align:center;"
+    > %
+</div>
     <div class="category">
         <div class="category-title">📊 Rangliste</div>
         <div id="dancerStats"></div>
@@ -502,7 +512,7 @@ const container = document.getElementById("container");
 const totalDisplay = document.getElementById("total");
 
 let displayedTotal = 0;
-
+let discountPercent = 0;
 /* 🔊 SOUNDS */
 const clickSound = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
 const hoverSound = new Audio("https://www.myinstants.com/media/sounds/mouse-hover.mp3");
@@ -620,12 +630,15 @@ div.oncontextmenu = (e) => {
         container.appendChild(section);
     });
 
-        animateTotal(total);
-}
+        const discountAmount = total * (discountPercent / 100);
+const discountedTotal = Math.floor(total - discountAmount);
+
+animateTotal(discountedTotal);
 
 function saveBarData() {
     localStorage.setItem("vuBarProducts", JSON.stringify(products));
     localStorage.setItem("vuBarHistory", JSON.stringify(actionHistory));
+    localStorage.setItem("vuBarDiscount", discountPercent);
 }
 
 function loadBarData() {
@@ -645,6 +658,16 @@ function loadBarData() {
     if (savedHistory) {
         actionHistory = JSON.parse(savedHistory) || [];
     }
+    const savedDiscount = localStorage.getItem("vuBarDiscount");
+
+if (savedDiscount !== null) {
+    discountPercent = parseFloat(savedDiscount) || 0;
+
+    const discountInput = document.getElementById("discountInput");
+    if (discountInput) {
+        discountInput.value = discountPercent;
+    }
+}
 }
 
 function clearBarData() {
@@ -713,8 +736,18 @@ function generateLog() {
     });
 
     log += "────────────────────────\n";
-    log += `📦 Artikel gesamt: ${totalItems}\n`;
-    log += `💰 Gesamt Umsatz: ${totalMoney}$`;
+   log += `📦 Artikel gesamt: ${totalItems}\n`;
+log += `💰 Gesamt Umsatz: ${formatMoney(totalMoney)}$\n`;
+
+if (discountPercent > 0) {
+    const discountAmount = Math.floor(totalMoney * (discountPercent / 100));
+    const finalMoney = totalMoney - discountAmount;
+
+    log += `💸 Rabatt: ${discountPercent}% (-${formatMoney(discountAmount)}$)\n`;
+    log += `✅ Endbetrag: ${formatMoney(finalMoney)}$`;
+} else {
+    log += `✅ Endbetrag: ${formatMoney(totalMoney)}$`;
+}
 
     document.getElementById("logOutput").value = log;
 }
@@ -1204,6 +1237,17 @@ function escapeHtml(text) {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
 }
+    document.getElementById("discountInput").addEventListener("input", (e) => {
+    discountPercent = parseFloat(e.target.value) || 0;
+
+    if (discountPercent < 0) discountPercent = 0;
+    if (discountPercent > 100) discountPercent = 100;
+
+    e.target.value = discountPercent;
+
+    saveBarData();
+    render();
+});
 updateDate();
 loadBarData();
 render();
