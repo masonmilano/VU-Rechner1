@@ -522,19 +522,19 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 <script>
 const products = [
-    {name: "Champagna", price: 5000, count: 0, cat: "Getränke"},
-    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke"},
-    {name: "Daddy´s Big Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Mommy´s Juice", price: 4500, count: 0, cat: "Getränke"},
-    {name: "Cola", price: 2500, count: 0, cat: "Getränke"},
+    {name: "Champagna", price: 5000, count: 0, cat: "Getränke", sales: []},
+    {name: "Cum Shot", price: 4000, count: 0, cat: "Getränke", sales: []},
+    {name: "Daddy´s Big Juice", price: 4500, count: 0, cat: "Getränke", sales: []},
+    {name: "Mommy´s Juice", price: 4500, count: 0, cat: "Getränke", sales: []},
+    {name: "Cola", price: 2500, count: 0, cat: "Getränke", sales: []},
 
-    {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen"},
-    {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen"},
-    {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen"},
-    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen"},
-    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen"},
+    {name: "Bleed Burger", price: 1500, count: 0, cat: "Essen", sales: []},
+    {name: "Titty Sandwich", price: 1500, count: 0, cat: "Essen", sales: []},
+    {name: "Booty Cheesecake", price: 1500, count: 0, cat: "Essen", sales: []},
+    {name: "Dicke Nüsse", price: 1500, count: 0, cat: "Essen", sales: []},
+    {name: "Candy Dildo", price: 2000, count: 0, cat: "Essen", sales: []},
 
-    {name: "Party Box", price: 10000, count: 0, cat: "Extra"}
+    {name: "Party Box", price: 10000, count: 0, cat: "Extra", sales: []}
 ];
 
 let actionHistory = [];
@@ -609,7 +609,8 @@ function render() {
         itemsDiv.className = "items";
 
         products.filter(p => p.cat === cat).forEach((p) => {
-            total += p.price * p.count;
+total += p.sales.reduce((sum, sale) => sum + sale.finalPrice, 0);
+p.count = p.sales.length;
 
             const div = document.createElement("div");
             div.className = "item";
@@ -621,8 +622,26 @@ function render() {
 
 div.onclick = () => {
     // LINKSKLICK = +1
-    p.count++;
-    actionHistory.push({ name: p.name, change: +1 });
+    const discountAmount = Math.floor(p.price * (discountPercent / 100));
+const finalPrice = p.price - discountAmount;
+
+p.sales.push({
+    originalPrice: p.price,
+    finalPrice: finalPrice,
+    discount: discountPercent
+});
+
+p.count = p.sales.length;
+
+actionHistory.push({ 
+    name: p.name, 
+    change: +1,
+    sale: {
+        originalPrice: p.price,
+        finalPrice: finalPrice,
+        discount: discountPercent
+    }
+});
     play(clickSound);
     saveBarData();
     render();
@@ -633,8 +652,15 @@ div.oncontextmenu = (e) => {
     e.preventDefault();
 
     if (p.count > 0) {
-        p.count--;
-        actionHistory.push({ name: p.name, change: -1 });
+       const removedSale = p.sales.pop();
+
+p.count = p.sales.length;
+
+actionHistory.push({ 
+    name: p.name, 
+    change: -1,
+    sale: removedSale
+});
         play(clickSound);
         saveBarData();
         render();
@@ -682,7 +708,8 @@ function loadBarData() {
 
         products.forEach((product, index) => {
             if (parsedProducts[index]) {
-                product.count = parsedProducts[index].count || 0;
+               product.sales = parsedProducts[index].sales || [];
+product.count = product.sales.length;
             }
         });
     }
@@ -727,10 +754,17 @@ function undoAction() {
     const last = actionHistory.pop();
     const product = products.find(p => p.name === last.name);
 
-    if (product) {
-        product.count -= last.change;
-        if (product.count < 0) product.count = 0;
+    if (!product) return;
+
+    if (last.change === +1) {
+        product.sales.pop();
     }
+
+    if (last.change === -1 && last.sale) {
+        product.sales.push(last.sale);
+    }
+
+    product.count = product.sales.length;
 
     saveBarData();
     render();
@@ -750,11 +784,17 @@ function generateLog() {
 
         products.forEach(p => {
             if (p.cat === cat && p.count > 0) {
-                const sum = p.price * p.count;
+               const sum = p.sales.reduce((total, sale) => total + sale.finalPrice, 0);
+const originalSum = p.sales.reduce((total, sale) => total + sale.originalPrice, 0);
+const discountSaved = originalSum - sum;
                 totalMoney += sum;
                 totalItems += p.count;
 
-                block += `• ${p.name} ×${p.count} → ${sum}$\n`;
+                if (discountSaved > 0) {
+    block += `• ${p.name} ×${p.count} → ${formatMoney(sum)}$ (-${formatMoney(discountSaved)}$ Rabatt)\n`;
+} else {
+    block += `• ${p.name} ×${p.count} → ${formatMoney(sum)}$\n`;
+}
             }
         });
 
@@ -771,15 +811,7 @@ function generateLog() {
    log += `📦 Artikel gesamt: ${totalItems}\n`;
 log += `💰 Gesamt Umsatz: ${formatMoney(totalMoney)}$\n`;
 
-if (discountPercent > 0) {
-    const discountAmount = Math.floor(totalMoney * (discountPercent / 100));
-    const finalMoney = totalMoney - discountAmount;
-
-    log += `💸 Rabatt: ${discountPercent}% (-${formatMoney(discountAmount)}$)\n`;
-    log += `✅ Endbetrag: ${formatMoney(finalMoney)}$`;
-} else {
-    log += `✅ Endbetrag: ${formatMoney(totalMoney)}$`;
-}
+log += `✅ Endbetrag: ${formatMoney(totalMoney)}$`;
 
     document.getElementById("logOutput").value = log;
 }
