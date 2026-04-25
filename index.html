@@ -188,7 +188,38 @@ button:hover {
     font-size: 24px;
     font-family: "Orbitron", sans-serif;
 }
+.discount-box {
+    margin: 14px auto 4px auto;
+    padding: 12px 16px;
+    width: fit-content;
+    background: rgba(255, 0, 204, 0.08);
+    border: 1px solid rgba(255, 0, 204, 0.35);
+    border-radius: 14px;
+    box-shadow: 0 0 14px rgba(255, 0, 204, 0.18);
+    color: #ff4dd2;
+    font-family: "Orbitron", sans-serif;
+    font-size: 15px;
+    text-shadow: 0 0 8px #ff00cc;
+}
 
+.discount-box input {
+    width: 70px;
+    margin: 0 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 0, 204, 0.45);
+    background: rgba(10, 0, 8, 0.95);
+    color: #ffffff;
+    font-family: "Orbitron", sans-serif;
+    text-align: center;
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 0, 204, 0.15);
+}
+
+.discount-box input:focus {
+    border-color: #ff4dd2;
+    box-shadow: 0 0 18px rgba(255, 0, 204, 0.55);
+}
 textarea {
     width: 90%;
     height: 140px;
@@ -401,16 +432,16 @@ textarea::-webkit-scrollbar-thumb:hover {
     <div class="total">
         💰 Gesamt: <span id="total">0</span>$
     </div>
-<div style="margin-top:12px;">
-    💸 Rabatt:
+<div class="discount-box">
+    💸 Rabatt
     <input 
         type="number" 
         id="discountInput" 
         min="0" 
         max="100" 
         value="0"
-        style="width:80px; text-align:center;"
-    > %
+    >
+    %
 </div>
     <button onclick="generateLog()">🧾 Log erstellen</button>
     <button onclick="resetAll()">🔄 Reset</button>
